@@ -1,0 +1,51 @@
+2.0.0:
+
+Rewrote the interpreter.
+The new interpreter is divided into two steps:
+A parser which parses the text and creates a program object, which then
+can be executed effectively.
+
+The new interpreter executes program faster and more correct than the old one.
+
+2.0.1:
+#! handling fixed.
+Nop-statement "_" added.
+MigolCLI now catches the exceptions and prints a short message.
+"-timing" option has changed name to "-t".
+
+Empty programs are no longer quines.
+Some javadoc added.
+
+2.0.2
+"--version" version has been added.
+"--" now adds support for file names starting with -
+
+2.0.3
+Modified usage text and flags
+
+2.0.4
+Modified usage text again
+
+2.0.5
+Added <$! (Forgot it!)
+
+2.1.0
+I/O callback added to the interpreter, which makes the classes more reusable.
+executeStep method added to MigolParsedProgram
+executeNewSession method removed from MigolParsedProgram
+
+2.1.1
+MigolIOExecutionException added
+Improvements to parser exceptions.
+
+2.2.0
+State saving function added.
+New MigolExecutionSession constructors added
+Improved error messages
+
+2.2.1
+More restructuring of MigolParsingException
+
+
+
+
