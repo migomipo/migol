@@ -31,7 +31,12 @@ import se.migomipo.migol2.execute.MigolExecutionSession;
 import se.migomipo.migol2.execute.MigolExecutionException;
 
 /**
- * Defines a statement conditional operation.
+ * Defines a conditional operation.
+ *
+ * Each conditional operation can be evaluated with a
+ * {@link se.migomipo.migol2.execute.MigolExecutionSession}, and return true or
+ * false, likely using the current session data for the evaluation.
+ *
  *
  *
  * @author John Eriksson
@@ -50,7 +55,7 @@ public interface ConditionalOperation extends Serializable {
     /**
      * Returns a Migol syntax string representation of this conditional operation
      * as a conditional suffix.
-     * @return  The conditional operation as a Migol string.
+     * @return  The conditional operation as a Migol syntactic string.
      */
     public String toMigolSyntax();
 }

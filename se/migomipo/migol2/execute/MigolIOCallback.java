@@ -26,12 +26,45 @@
 
 package se.migomipo.migol2.execute;
 
+import se.migomipo.migol2.InputBufferValue;
+import se.migomipo.migol2.OutputStatement;
+
 /**
+ * An interface representing the available I/O functions in Migol.
+ * 
+ * When an {@link OutputStatement} is executed, or an {@link InputBufferValue} 
+ * is evaluated, the corresponding I/O callback methods are called. 
+ *
  *
  * @author John Eriksson
  */
 public interface MigolIOCallback {
+
+    /**
+     * Reads an integer and returns it.
+     *
+     * This method is called when a {@link InputBufferValue} ({@code [&#64;]})
+     * is evaluated.
+     * @return  The read value, as a 32-bit signed integer.
+     * @throws java.io.IOException
+     */
     public int inputValue() throws java.io.IOException;
+    /**
+     * Prints an integer as a ASCII character.
+     *
+     * This method is called when a {@link OutputStatement} in character printing
+     * mode ({@code &gt;}) is called.
+     * @param value     The character to be printed.
+     * @throws java.io.IOException
+     */
     public void outputChar(int value) throws java.io.IOException;
+    /**
+     * Prints an integer as a series of digits.
+     *
+     * This method is called when a {@link OutputStatement} in number printing
+     * mode ({@code &gt;-}) is called.
+     * @param value     The character to be printed.
+     * @throws java.io.IOException
+     */
     public void outputInt(int value) throws java.io.IOException;
 }

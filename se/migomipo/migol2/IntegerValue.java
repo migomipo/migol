@@ -57,8 +57,9 @@ public class IntegerValue implements MigolValue {
      * The integer value.
      */
     private final int value;
-    /*
-     * Returns the number of dereferences.
+    /**
+     *
+     * {@inheritDoc MigolValue}
      */
     public int getDefers() {
         return defers;
@@ -70,9 +71,6 @@ public class IntegerValue implements MigolValue {
     public int getValue() {
         return value;
     }
-
-
-
 
     /**
      * Creates a new object, representing an integer-addressed or immediate
@@ -89,10 +87,11 @@ public class IntegerValue implements MigolValue {
      * Fetches the current value of this expression from the
      * {@link MigolExecutionSession session} object.
      *
-     * It will defer the value as many times as specified in the current object.
+     * It will defer the value as many times as specified in this object.
      * If it is 0, it will just return the integer value.
      * @param session   The session that the value is fetched from.
-     * @return  The resulting integer.
+     * @return The resulting value as an 32-bit signed integer (as Java defines
+     * the int data type).
      * @throws se.migomipo.migol2.execute.MigolExecutionException   If the
      * deferring encounters a negative memory address
      */
@@ -101,19 +100,17 @@ public class IntegerValue implements MigolValue {
         int temp = value;
         int[] mem = session.getMemory();
         for(int i=0;i<defers;i++){
-            if(temp < 0) throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP());
+            if(temp < 0) throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP(),session.getPP());
             temp = mem[temp];
             // No recursion! A huge improvement over the older, more crappy
             // interpreter.
         }
         return temp;
         } catch(ArrayIndexOutOfBoundsException ex){
-            throw new MigolExecutionException("Memory access exceeded available memory at statement " + session.getPP());
+            throw new MigolExecutionException("Memory access exceeded available memory at statement " + session.getPP(),session.getPP());
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -131,9 +128,7 @@ public class IntegerValue implements MigolValue {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 3;
@@ -143,7 +138,7 @@ public class IntegerValue implements MigolValue {
     }
     
     /**
-     * {@inheritDoc}
+     * {@inheritDoc MigolValue}
      */
     public String toMigolSyntax() {
         String number = Integer.toString(value);

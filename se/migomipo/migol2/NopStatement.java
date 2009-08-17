@@ -33,25 +33,31 @@ import se.migomipo.migol2.execute.*;
  * A NOP Operation statement, which does nothing except moving the program
  * pointer to the next statement.
  *
- * The NOP statement in Migol is <code>0</code>.
+ * The NOP statement in Migol is <code>_</code>.
  * @author John Eriksson
  */
 public class NopStatement implements MigolStatement {
     private static final long serialVersionUID = 8187417599523176457L;
+    /**
+     * Singleton instance for a NopStatement. Since NopStatement objects contain
+     * no data, it is recommended to use this instance instead of creating
+     * NopStatement objects.
+     */
     public static final NopStatement __INSTANCE__;
     static {
         __INSTANCE__ = new NopStatement();
     }
     /**
      * Does nothing, besides increasing the program pointer by 1.
-     * @param session   The session object to which the statement will be performed.
+     * @param session   The session object to which the statement will be
+     * performed.
      *
      */
     public void executeStatement(MigolExecutionSession session){
         session.progressPP();
     }
     /**
-     * {@inheritDoc}
+     * {@inheritDoc MigolStatement}
      */
     public String toMigolSyntax() {
        return "_";

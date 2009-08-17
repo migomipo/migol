@@ -27,11 +27,8 @@ package se.migomipo.migol2.execute;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.OutputStream;
 import java.util.Arrays;
 
@@ -112,7 +109,11 @@ public class MigolExecutionSession {
     public void progressPP() {
         pp++;
     }
-
+    /**
+     * Returns the {@link se.migomipo.migol2.execute.MigolIOCallback} object for
+     * this session.
+     * @return  The {@link se.migomipo.migol2.execute.MigolIOCallback} object.
+     */
     public MigolIOCallback getIOCallback() {
         return iocallback;
     }
@@ -147,6 +148,11 @@ public class MigolExecutionSession {
         return hash;
     }
 
+    /**
+     * Writes the current state of this session to a {@code OutputStream}.
+     * @param out   The output stream which the state will be written to.
+     * @throws java.io.IOException
+     */
     public void saveState(OutputStream out) throws IOException {
         DataOutputStream dout = new DataOutputStream(out);
         dout.writeInt(pp);
@@ -157,6 +163,14 @@ public class MigolExecutionSession {
 
     }
 
+    /**
+     * Loads state from a {@code InputStream} to this session object.
+     *
+     * It is suitable to load data which have been saved with the
+     * {@link MigolExecutionSession#saveState(java.io.OutputStream) } method.
+     * @param in
+     * @throws java.io.IOException
+     */
     public void loadState(InputStream in) throws IOException {
         DataInputStream din = new DataInputStream(in);
         pp = din.readInt();

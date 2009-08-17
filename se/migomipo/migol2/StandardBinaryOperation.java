@@ -28,7 +28,35 @@ package se.migomipo.migol2;
 
 import se.migomipo.migol2.execute.MigolExecutionException;
 import se.migomipo.migol2.execute.MigolExecutionSession;
-
+/**
+ * This class contains the set of the standard assignment operations in
+ * Migol 09. These take a value, performs the operations and returns the result
+ * as an integer.
+ *
+ * These are :<br/>
+ * <ol>
+ * <li><code>&lt;</code> (direct assignment)<li>
+ * <li><code>&lt;$+</code> (add to)</li>
+ * <li><code>&lt;$-</code> (subtract from)</li>
+ * <li><code>&lt;$*</code> (multiply with)</li>
+ * <li><code>&lt;$/</code> (divide from)<li>
+ * <li><code>&lt;$%</code> (modulo)</li>
+ * <li><code>&lt;$&</code> (bitwise and)</li>
+ * <li><code>&lt;$|</code> (bitwise or)</li>
+ * <li><code>&lt;$^</code> (bitwise xor)</li>
+ * <li><code>&lt;$&lt;&lt;</code> (left bitshift)</li>
+ * <li><code>&lt;$&gt;&gt;</code> (right arithmetic bitshift)</li>
+ * <li><code>&lt;$&gt;&gt;&gt;</code> (right logical bitshift)</li>
+ * <li><code>&lt;$&lt;&lt;_</code> (left bit rotation)</li>
+ * <li><code>&lt;$&gt;&gt;_</code> (right bit rotation)</li>
+ * </ol>
+ *
+ * In this implemenation, the <code>&lt;$!</code> (bitwise not) is implemented
+ * by using a xor operation with -1.
+ *
+ * @author John Eriksson
+ * @see AssignmentStatement
+ */
 public class StandardBinaryOperation implements AssignmentOperation {
     private static final long serialVersionUID = -5844275926070860555L;
     /**
@@ -119,7 +147,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
     /**
      * Performs this operation.
      * @param session   The session object to which the statement will be performed.
-     * @param currentvalue  The current value of the object to be modified.
+     * @param currentvalue  The left side value of this operation.
      * @return  The result of this operation.
      * @throws se.migomipo.migol2.execute.MigolExecutionException
      * If the operation constant is unknown.
@@ -156,7 +184,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
             case OP_RRO:
                 return rotr(currentvalue, cal);
             default:
-                throw new MigolExecutionException("Unknown operator at statement " + session.getPP());
+                throw new MigolExecutionException("Unknown operator at statement " + session.getPP(),session.getPP());
         }
     }
 
@@ -170,7 +198,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
         return (value >>> shift) | (value << (32 - shift));
     }
     /**
-     * {@inheritDoc}
+     * {@inheritDoc AssignmentOperation}
      */
     public String toMigolSyntax() {
         switch (operation) {
@@ -206,9 +234,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
                 return "";
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -226,9 +252,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 3;

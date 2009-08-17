@@ -33,7 +33,7 @@ import se.migomipo.migol2.execute.MigolExecutionException;
 /**
  * Represents a Migol assignment statement.
  *
- * Assignment statements are integral to the Migol programming language.
+ * Assignment statements are the central part of the Migol programming language.
  * All mathemathical operations and even branching are made with assignment
  * statements.
  *
@@ -41,9 +41,10 @@ import se.migomipo.migol2.execute.MigolExecutionException;
  * <ul>
  * <li>A target value. This is the address which will be manipulated. </li>
  * <li>One or more assignment operations. Each assignment operation is a
- * operator and a value. They will each be sequentially applied to the target
+ * operator and optionally a value. They will each be sequentially applied to the target
  * value.</li>
- * <li>An optional conditional operator, which makes the operation conditional.
+ * <li>Like output statements, an assignment statement may contain a conditional
+ * operator, which makes the operation conditional.
  * If the conditional operation evaluates to false, the statement won't be
  * executed.</li>
  * </ul>
@@ -97,12 +98,10 @@ public class AssignmentStatement implements MigolStatement {
             executeMemoryModification(session);
             session.progressPP();
         }
-
-
     }
 
     /**
-     * Modifies the program counter.
+     * Performs a branch operation.
      * @param session   The session object to which the statement will be performed.
      * @throws se.migomipo.migol2.execute.MigolExecutionException   If an error
      * occurs during the operation.
@@ -117,13 +116,13 @@ public class AssignmentStatement implements MigolStatement {
         session.setPP(calpp);
 
         if (session.getPP() <= 0) {
-            throw new MigolExecutionException("Program pointer were set to non-positive value at statement " + currentpp);
+            throw new MigolExecutionException("Program pointer were set to non-positive value at statement " + currentpp,currentpp);
         }
 
     }
 
     /**
-     * Modifies the program memory.
+     * Performs a memory modification operation.
      * @param session   The session object to which the statement will be performed.
      * @throws se.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
@@ -140,14 +139,16 @@ public class AssignmentStatement implements MigolStatement {
     /**
      * Creates a new object, representing a Migol assignment statement.
      * @param target    The target address.
-     * @param operation The set of operation to be performed on the target address.
+     * @param operation The set of operations to be performed on the target address.
      */
     public AssignmentStatement(MigolValue target, AssignmentOperation[] operation) {
         this.target = target;
-        this.ops = operation;
-       
+        this.ops = operation;       
     }
-
+    /**
+     *
+     * {@inheritDoc MigolStatement}
+     */
     public String toMigolSyntax() {
         StringBuffer buff = new StringBuffer();
         buff.append(target.toMigolSyntax());
@@ -156,9 +157,7 @@ public class AssignmentStatement implements MigolStatement {
         }        
         return buff.toString();
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -176,9 +175,7 @@ public class AssignmentStatement implements MigolStatement {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 3;

@@ -34,12 +34,17 @@ import se.migomipo.migol2.execute.MigolIOExecutionException;
  *
  * It is mostly used as [&#64;], when reading a value from input. It can also
  * theoretically be used with several defering steps, such as [[&#64;]], which
- * returns the value as the address returned by input.
+ * returns the value at the address returned by input.
  *
  * It can NOT be used as an immediate value. If the program tries to read from
  * or assign to @, an exception will be thrown.
  *
-
+ * The InputBufferValue object reads a value by calling the
+ * {@link se.migomipo.migol2.execute.MigolIOCallback} object of the
+ * {@link se.migomipo.migol2.execute.MigolExecutionSession} session object.
+ *
+ *
+ * @see se.migomipo.migol2.execute.MigolIOCallback
  * @author John Eriksson
  */
 public class InputBufferValue implements MigolValue {
@@ -57,35 +62,46 @@ public class InputBufferValue implements MigolValue {
         this.defers = defer;
     }
     /**
-     * Returns the number of deferring steps.
-     * @return  Tthe number of deferring steps as an integer.
+     * {@inheritDoc MigolValue}
      */
     public int getDefers() {
         return defers;
     }
     /**
-     * Fetches the value of this expression in the session.
+     * Reads a value by calling the
+     * {@link se.migomipo.migol2.execute.MigolIOCallback} object. If the number
+     * of deferring levels are higher than 1, memory deferring will also occur.
      *
-     * Throws an {@link se.migomipo.migol2.execute.MigolExecutionException
-     * MigolExecutionException} if it encounters a negative memory address while
-     * deferring or tries to use the input buffer pointer as an immediate value.
-     * @param session
-     * @return  The resulting integer.
+     * If {@link InputBufferValue#fetchValue(se.migomipo.migol2.execute.MigolExecutionSession) }
+     * is called on an {@link InputBufferValue} object with no deferring, a
+     * {@link se.migomipo.migol2.execute.MigolExecutionException} is thrown.
+     * This is because @ should be seen as a pointer to the input buffer, and
+     * doesn't have a value by itself.
+     *
+     * Like in all the other value types, a
+     * {@link se.migomipo.migol2.execute.MigolExecutionException} is thrown if
+     * the deferring loop tries to read the value from a negative memory address.
+     *
+     * @param session   The session used for fetching the value.
+     * @return  The resulting value as an 32-bit signed integer (as Java 
+     * defines the int data type).
+     * @see se.migomipo.migol2.execute.MigolIOCallback
      * @throws se.migomipo.migol2.execute.MigolExecutionException   If the object represents @ and is used as an immediate value.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address
+     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address.
+     * * @throws se.migomipo.migol2.execute.MigolIOExecutionException   If an I/O error occurs while trying to read the value.
      */
     public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
 
-        if(defers == 0) throw new MigolExecutionException("Invalid input value usage at statement " + session.getPP());
+        if(defers == 0) throw new MigolExecutionException("Invalid input value usage at statement " + session.getPP(),session.getPP());
         int temp = 0;
         int[] memory = session.getMemory();
         try {
             temp = session.getIOCallback().inputValue();
         } catch(Exception e){
-             throw new MigolIOExecutionException("I/O operation failed at statement " + session.getPP(),e);
+             throw new MigolIOExecutionException("I/O operation failed at statement " + session.getPP(),e,session.getPP());
         }
         for(int i=1;i<defers;i++){
-            if(temp < 0) throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP());
+            if(temp < 0) throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP(),session.getPP());
             temp = memory[temp];
 
         }
@@ -93,7 +109,9 @@ public class InputBufferValue implements MigolValue {
     }
 
     
-
+    /**
+     * {@inheritDoc MigolValue}
+     */
     public String toMigolSyntax() {
 
         StringBuffer buff = new StringBuffer();
@@ -106,9 +124,7 @@ public class InputBufferValue implements MigolValue {
         }
         return buff.toString();
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -123,9 +139,7 @@ public class InputBufferValue implements MigolValue {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 7;

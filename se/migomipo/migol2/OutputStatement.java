@@ -37,8 +37,14 @@ import se.migomipo.migol2.execute.MigolIOExecutionException;
  * <code>[#]</code> and <code>[[[45]]]</code>. The &gt; operator prints out
  * the value as a character, and the &gt;- prints out the value as a number.
  *
- * Output statements can be conditional, simply by appending a conditional
- * operator after. An example is <code>[4]&gt;?&lt;[3]</code>.
+ * {@link OutputStatement} objects print data by calling the
+ * {@link se.migomipo.migol2.execute.MigolIOCallback} object of the
+ * {@link se.migomipo.migol2.execute.MigolExecutionSession}.
+ *
+ * There are two modes available for {@link OutputStatement} objects, print as
+ * byte (&gt;) and print as integer (&gt;-). The integer mode converts the value
+ * to digits before printing.
+ *
  *
  * @author John Eriksson
  */
@@ -60,6 +66,8 @@ public class OutputStatement implements MigolStatement {
      * @param session   The session that the value is fetched from.
      * @throws se.migomipo.migol2.execute.MigolExecutionException
      * If the selected mode is unknown.
+     * @throws se.migomipo.migol2.execute.MigolIOExecutionException
+     * If an I/O error occurs while trying to print the value.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
         try {
@@ -69,18 +77,18 @@ public class OutputStatement implements MigolStatement {
             } else if (mode == 2) {
                 session.getIOCallback().outputInt(val);
             } else {
-                throw new MigolExecutionException("Unknown output mode at statement " + session.getPP());
+                throw new MigolExecutionException("Unknown output mode at statement " + session.getPP(),session.getPP());
             }
             session.progressPP();
         } catch (java.io.IOException e) {
-            throw new MigolIOExecutionException("I/O operation failed at statement " + session.getPP(), e);
+            throw new MigolIOExecutionException("I/O operation failed at statement " + session.getPP(), e,session.getPP());
         }
     }
 
     /**
      * Creates a new output statement object.
      * 
-     * @param value The value to be printed
+     * @param value The value to be printed.
      * @param mode  The printing mode.
      */
     public OutputStatement(MigolValue value, int mode) {
@@ -91,6 +99,9 @@ public class OutputStatement implements MigolStatement {
         this.mode = mode;
     }
 
+    /**
+     * {@inheritDoc MigolStatement}
+     */
     public String toMigolSyntax() {
         String print = null;
         switch (mode) {
@@ -106,9 +117,7 @@ public class OutputStatement implements MigolStatement {
         return value.toMigolSyntax() + print;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 5;
@@ -117,9 +126,7 @@ public class OutputStatement implements MigolStatement {
         return hash;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+   
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

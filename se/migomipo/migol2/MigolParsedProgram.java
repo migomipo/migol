@@ -25,8 +25,6 @@
  */
 package se.migomipo.migol2;
 
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import se.migomipo.migol2.execute.*;
@@ -64,7 +62,8 @@ public class MigolParsedProgram implements Serializable {
      *
      * The session will not be reset. If an old session object is used, the old
      * memory content will still be preserved when execution starts.
-     * @param session
+     * @param session   The session which will be manipulated in this program
+     * execution.
      * @throws se.migomipo.migol2.execute.MigolExecutionException
      * If an error occurs during execution.
      */
@@ -74,11 +73,18 @@ public class MigolParsedProgram implements Serializable {
             if (next != null) {
                 next.executeStatement(session);
             } else {
-                throw new MigolExecutionException("Null statement found");
+                throw new MigolExecutionException("Null statement found",session.getPP());
             }
         }
     }
-
+    /**
+     * Executes a single step of this program on the given session.
+     * The step to be executed is determined by the value of the program
+     * pointer of the {@link MigolExecutionSession} object.
+     * @param session   The session which will be manipulated in this program
+     * execution.
+     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     */
     public void executeStep(MigolExecutionSession session) throws MigolExecutionException {
         int currentpp = session.getPP();
         if (currentpp <= 0 || currentpp > size()) {
@@ -88,12 +94,12 @@ public class MigolParsedProgram implements Serializable {
         if (next != null) {
             next.executeStatement(session);
         } else {
-            throw new MigolExecutionException("Null statement found");
+            throw new MigolExecutionException("Null statement found",currentpp);
         }
     }
 
     /**
-     * Creates a new MigolParsedProgram object that contains the statements
+     * Creates a new MigolParsedProgram object containing the statements
      * in the given argument.
      * @param statements    The statements in the new program.
      * @see MigolStatement
@@ -102,9 +108,7 @@ public class MigolParsedProgram implements Serializable {
         this.statements = statements;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -120,9 +124,7 @@ public class MigolParsedProgram implements Serializable {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 5;

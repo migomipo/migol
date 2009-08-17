@@ -26,7 +26,8 @@
 package se.migomipo.migol2.parse;
 
 /**
- * Thrown whenever the MigolParser encounters a syntax error in the parse text.
+ * Signaled by the parser whenever a syntax error has been found in the parsed
+ * text.
  * @see se.migomipo.migol2.parse.MigolParser
  * @author John Eriksson
  */
@@ -36,15 +37,31 @@ public class MigolParsingException extends Exception {
     private final int errorpos;
     private final String errorpointer;
     
-
-    public MigolParsingException(String message,String errorline, int linenumber, int errorpos) {
+    /**
+     * Constructs a {@code MigolParsingException} object.
+     * @param message   The error detail message.
+     * @param errorline     The code line where the syntax error was found.
+     * @param linenumber    The number of the line where the 
+     * @param errorpos      The character position where the syntax error was 
+     * found.
+     */
+    public MigolParsingException(String message,String errorline, int linenumber, int errorpos) {        
         super(message);
         this.errorline = errorline;
         this.linenumber = linenumber;
         this.errorpos = errorpos;
         this.errorpointer = generateErrorPointer();
     }
-
+    /**
+     * Constructs a {@code MigolParsingException} object with a specified 
+     * cause.
+     * @param message   The error detail message.
+     * @param cause     The cause.
+     * @param errorline     The code line where the syntax error was found.
+     * @param linenumber    The number of the line where the 
+     * @param errorpos      The character position where the syntax error was 
+     * found.
+     */
     public MigolParsingException(String message, Throwable cause,String errorline, int linenumber, int errorpos) {
         super(message, cause);
         this.errorline = errorline;
@@ -53,11 +70,19 @@ public class MigolParsingException extends Exception {
         this.errorpointer = generateErrorPointer();
     }
     
+    /**
+     * Returns a String describing the syntax error.
+     * @return  The error message and error highlighting.
+     */
     @Override
     public String getMessage(){
         return super.getMessage() + "\n" + errorpointer;
     }
 
+    /**
+     * Returns a String describing the syntax error.
+     * @return  The error message and error highlighting.
+     */
     @Override
     public String getLocalizedMessage(){
         return this.getMessage();

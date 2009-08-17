@@ -36,13 +36,17 @@ import se.migomipo.migol2.execute.MigolExecutionException;
 public interface MigolStatement extends Serializable{
     /**
      * Executes the statement.
-     * @param session   The session object to which the statement will be performed.
+     * @param session   The session object to which the statement will be
+     * performed.
      * @throws se.migomipo.migol2.execute.MigolExecutionException
      * if an error occurs during execution.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException;
     /**
      * Returns a Migol string representation of this statement.
+     *
+     * This method can be used to convert parsed statement back to a Migol text
+     * program.
      * @return  A Migol syntax string of this statement.
      */
     public String toMigolSyntax();

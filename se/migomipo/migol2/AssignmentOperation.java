@@ -28,12 +28,14 @@ package se.migomipo.migol2;
 import java.io.Serializable;
 import se.migomipo.migol2.execute.MigolExecutionSession;
 import se.migomipo.migol2.execute.MigolExecutionException;
+
 /**
  * Represents a single assignment operation.
  *
  * These are executed in a sequence in a {@link AssignmentStatement}.
  *
  * @author John Eriksson
+ * @see AssignmentStatement
  */
 public interface AssignmentOperation extends Serializable {
 
@@ -46,5 +48,11 @@ public interface AssignmentOperation extends Serializable {
      * If an error occurs during the operation.
      */
     public int operation(MigolExecutionSession session, int currentvalue) throws MigolExecutionException;
+
+    /**
+     * Returns a Migol syntax string representation of this assignment
+     * operation.
+     * @return  The conditional operation as a Migol syntactic string.
+     */
     public String toMigolSyntax();
 }

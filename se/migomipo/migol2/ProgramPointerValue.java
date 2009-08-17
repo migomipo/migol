@@ -37,7 +37,8 @@ import se.migomipo.migol2.execute.MigolExecutionException;
  *
  * Since # is not a valid immediate value, an exception is thrown when a
  * program tries to fetch the value from it. It can only be used to represent
- * the program pointer in an assignment statement.
+ * the program pointer in an assignment statement. The reason for this is that
+ * # is a pointer to the program counter, and has no integer value by itself.
  * @author John Eriksson
  */
 public class ProgramPointerValue implements MigolValue {
@@ -78,13 +79,13 @@ public class ProgramPointerValue implements MigolValue {
      */
     public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
         if (defers == 0) {
-            throw new MigolExecutionException("Program pointer was incorrectly used as an immediate value at statement " + session.getPP());
+            throw new MigolExecutionException("Program pointer was incorrectly used as an immediate value at statement " + session.getPP(),session.getPP());
         }
         int[] memory = session.getMemory();
         int temp = session.getPP();
         for (int i = 1; i < defers; i++) {
             if (temp < 0) {
-                throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP());
+                throw new MigolExecutionException("Attempted to read a negative memory address at statement " + session.getPP(),session.getPP());
             }
             temp = memory[temp];
 

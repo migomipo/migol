@@ -39,7 +39,7 @@ import se.migomipo.migol2.execute.MigolExecutionException;
 public interface MigolValue extends java.io.Serializable {
     /**
      * Returns the resulting memory value.
-     * @param session     The session used for fetching the value
+     * @param session     The session used for fetching the value.
      * @return  The resulting value as an 32-bit signed integer (as Java defines
      * the int data type).
      * @throws se.migomipo.migol2.execute.MigolExecutionException  If an error

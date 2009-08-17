@@ -43,11 +43,17 @@ import se.migomipo.migol2.execute.MigolExecutionSession;
  */
 public class MigolParser {
 
-    private static transient LineNumberReader code;
-    private static transient List<MigolStatement> statements;
-    private static transient int strpos;
-    private static transient String cLine;
+    private transient LineNumberReader code;
+    private transient List<MigolStatement> statements;
+    private transient int strpos;
+    private transient String cLine;
 
+    /**
+     * Creates a new MigolParser object.
+     */
+    public MigolParser(){
+
+    }
     /**
      * Reads data from a {@link java.io.File} and parses it.
      * @param file  The file object to be read.
@@ -57,7 +63,7 @@ public class MigolParser {
      * @throws se.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
-    public static MigolParsedProgram parseFile(File file)
+    public MigolParsedProgram parseFile(File file)
             throws IOException, MigolParsingException {
         return parse(new FileReader(file));
     }
@@ -71,7 +77,7 @@ public class MigolParser {
      * @throws se.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
-    public static MigolParsedProgram parseFile(FileDescriptor fd)
+    public MigolParsedProgram parseFile(FileDescriptor fd)
             throws IOException, MigolParsingException {
         return parse(new FileReader(fd));
     }
@@ -85,7 +91,7 @@ public class MigolParser {
      * @throws se.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
-    public static MigolParsedProgram parseFile(String filename)
+    public MigolParsedProgram parseFile(String filename)
             throws IOException, MigolParsingException {
         return parse(new FileReader(new File(filename)));
     }
@@ -99,7 +105,7 @@ public class MigolParser {
      * @throws se.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
-    public static MigolParsedProgram parse(InputStream stream)
+    public MigolParsedProgram parse(InputStream stream)
             throws IOException, MigolParsingException {
         return parse(new InputStreamReader(stream));
     }
@@ -113,7 +119,7 @@ public class MigolParser {
      * @throws se.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
-    public static MigolParsedProgram parse(Reader reader)
+    public MigolParsedProgram parse(Reader reader)
             throws IOException, MigolParsingException {
         code = new LineNumberReader(reader);
         statements = new LinkedList<MigolStatement>();
@@ -151,13 +157,13 @@ public class MigolParser {
 
     }
 
-    private static void cleanUp() {
+    private void cleanUp() {
         code = null;
         cLine = null;
         statements = null;
     }
 
-    private static boolean endOfLine() {
+    private boolean endOfLine() {
         return strpos >= cLine.length();
     }
 
@@ -168,11 +174,11 @@ public class MigolParser {
      * @param c The character to be controlled.
      * @return  <b>true</b> if the character is a number, <b>false</b> otherwise.
      */
-    private static boolean isNum(char c) {
+    private boolean isNum(char c) {
         return c >= '0' && c <= '9';
     }
 
-    private static void parseLine(String line) throws MigolParsingException {
+    private void parseLine(String line) throws MigolParsingException {
         cLine = line;
         strpos = 0;
         while (!endOfLine()) {
@@ -193,7 +199,7 @@ public class MigolParser {
         }
     }
 
-    private static MigolStatement parseStatement() throws MigolParsingException {
+    private MigolStatement parseStatement() throws MigolParsingException {
         try {
             if (cLine.charAt(strpos) == '_') {
                 strpos++;
@@ -251,7 +257,7 @@ public class MigolParser {
         }
     }
 
-    private static MigolValue parseValue() throws MigolParsingException {
+    private MigolValue parseValue() throws MigolParsingException {
         int defers = 0; // The number of defers.
 
         try {
@@ -312,7 +318,7 @@ public class MigolParser {
 
     }
 
-    private static AssignmentOperation parseOperation()
+    private AssignmentOperation parseOperation()
             throws MigolParsingException {
 
         if (cLine.charAt(strpos) != '<') { // This method should never be called if this is false
@@ -387,7 +393,7 @@ public class MigolParser {
 
     }
 
-    private static ConditionalOperation parseConditional()
+    private ConditionalOperation parseConditional()
             throws MigolParsingException {
 
         char c = cLine.charAt(strpos);
@@ -430,7 +436,7 @@ public class MigolParser {
 
     }
 
-    private static int parseIntegerValue() throws MigolParsingException {
+    private int parseIntegerValue() throws MigolParsingException {
         int start = strpos;
         if (cLine.charAt(strpos) == '-') { // A negative integer
             strpos++;
@@ -458,7 +464,7 @@ public class MigolParser {
         }
     }
 
-    private static int checkRightBrackets() {
+    private int checkRightBrackets() {
         int count = 0;
         while (!endOfLine()) { // Count the ]'s
             char c = cLine.charAt(strpos);
@@ -472,11 +478,11 @@ public class MigolParser {
         return count;
     }
 
-    private static boolean isShebang(String line) {
+    private boolean isShebang(String line) {
         return line.startsWith("#!");
     }
 
-    private static void skipSpacesAndComments() throws MigolParsingException {
+    private void skipSpacesAndComments() throws MigolParsingException {
         while (!endOfLine()) {
             char c = cLine.charAt(strpos);
             if (Character.isSpaceChar(c) || c == '\t') {

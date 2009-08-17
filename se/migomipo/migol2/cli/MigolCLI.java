@@ -32,7 +32,7 @@ import se.migomipo.migol2.parse.MigolParser;
 import se.migomipo.migol2.parse.MigolParsingException;
 
 /**
- * The command line interface for Migol 09 2.2.
+ * The command line interface for Migol 09 2.3.
  *
  * The program reads a file, parses and executes it.
  * @see se.migomipo.migol2.parse.MigolParser
@@ -51,7 +51,7 @@ public class MigolCLI {
                 if (!ncommand && s.startsWith("-")) {
                     String command = s.substring(1);
                     if(command.equals("-version")){
-                        System.out.println("MigoMipo Migol 09 interpreter version 2.2.1");
+                        System.out.println("MigoMipo Migol 09 interpreter version 2.3.0");
                         System.out.println("\u00A9 John Eriksson 2009");
                         return;
                     }
@@ -68,7 +68,7 @@ public class MigolCLI {
             if (filename == null) {
                 System.err.println("MigoMipo Migol 09 interpreter version 2.2.1");
                 System.err.println("Usage: Migol2-0.jar [options] <filename>");
-                System.err.println("\u00A9 John Eriksson 2009\n");
+                System.err.println("\u00A9 2009 John Eriksson \n");
                 System.err.println("Options : ");
                 System.err.println("  -t              Prints time taken for parsing and executing the program");
                 System.err.println("  --version       Prints version information and quits");
@@ -76,7 +76,7 @@ public class MigolCLI {
             }
             if (timing) {
                 long startparsetime = System.currentTimeMillis();
-                MigolParsedProgram prog = MigolParser.parseFile(filename);
+                MigolParsedProgram prog = new MigolParser().parseFile(filename);
                 long totalparsetime = System.currentTimeMillis() - startparsetime;
                 System.out.println("Parse time : " + totalparsetime + " ms");
                 System.gc();
@@ -86,7 +86,7 @@ public class MigolCLI {
                 System.out.println("Execution time : " + totalexectime + " ms");
 
             } else {
-                MigolParsedProgram prog = MigolParser.parseFile(filename);
+                MigolParsedProgram prog = new MigolParser().parseFile(filename);
                 System.gc();
                 prog.executeProgram(new MigolExecutionSession());
             }

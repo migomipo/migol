@@ -32,15 +32,58 @@ package se.migomipo.migol2.execute;
  * @author John Eriksson
  */
 public class MigolExecutionException extends Exception {
-    public MigolExecutionException(){
+
+    private int statementpos;
+
+    /**
+     * Constructs a {@code MigolExecutionException} object.
+     *
+     *
+     * @param statementpos      The program counter position where
+     * the execution error occured.
+     */
+    public MigolExecutionException(int statementpos) {
         super();
+        this.statementpos = statementpos;
+
     }
-    public MigolExecutionException(String mess){
+
+    /**
+     * Constructs a {@code MigolExecutionException} object with a specified
+     * detail message.
+     *
+     * @param statementpos      The program counter position where
+     * the execution error occured.
+     * @param mess      The detail message.
+     */
+    public MigolExecutionException(String mess, int statementpos) {
         super(mess);
+        this.statementpos = statementpos;
+
     }
 
-    public MigolExecutionException(String mess, Throwable e) {
-        super(mess, e);
+    /**
+     * Constructs a {@code MigolExecutionException} object with a specified
+     * detail message and cause.
+     *
+     * @param statementpos      The program counter position where
+     * the execution error occured.
+     * @param mess      The detail message.
+     * @param cause     The cause.
+     *
+     */
+    public MigolExecutionException(String mess, Throwable cause, int statementpos) {
+        super(mess, cause);
+        this.statementpos = statementpos;
+
     }
 
+    /**
+     * Returns the position of the statement which caused the execution error to occur.
+     * @return  The position statement which caused this exception, as a
+     * integer, with a value >= 1.
+     */
+    public int getStatementpos() {
+        return statementpos;
+    }
 }

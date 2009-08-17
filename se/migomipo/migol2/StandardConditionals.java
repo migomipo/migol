@@ -36,10 +36,15 @@ import se.migomipo.migol2.execute.MigolExecutionSession;
  * All of the operators
  * {@link MigolValue#fetchValue(se.migomipo.migol2.execute.MigolExecutionSession) fetches}
  * the value of a {@link MigolValue} object and compares it with 0.
- * The available operators are <code>?=<code> (equal), "?&lt;&gt;" (not equal),
- * "?&lt;" (less than), "?&gt;" (greater than), "?&lt;=" (less than or equal),
- * and "?&gt;>=" (greater than or equal).
- *
+ * The available operators are:
+ * <ol>
+ * <li><code>?=</code> (equal to 0)</li>
+ * <li><code>?&lt;&gt;</code> (not equal to 0)</li>
+ * <li><code>?&lt;</code> (less than 0, negative non-zero value)</li>
+ * <li><code>?&lt;=</code> (less than or equal to 0, nonpositive value)</li>
+ * <li><code>?&gt;</code> (greater than 0, positive non-zero value)</li>
+ * <li><code>?&gt;=</code> (greater than or equal to 0, nonnegative value)</li>
+ * </ol>
  * @author John Eriksson
  */
 public class StandardConditionals implements ConditionalOperation {
@@ -113,11 +118,12 @@ public class StandardConditionals implements ConditionalOperation {
             case COND_NEQ:
                 return val != 0;
             default:
-                throw new MigolExecutionException("Unknown conditional " + "operator at statement " + session.getPP());
+                throw new MigolExecutionException("Unknown conditional " + 
+                        "operator at statement " + session.getPP(),session.getPP());
         }
     }
     /**
-     * {@inheritDoc}
+     * {@inheritDoc ConditionalOperation}
      */
     public String toMigolSyntax() {
         switch (op) {
@@ -137,9 +143,9 @@ public class StandardConditionals implements ConditionalOperation {
                 return "";
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -157,9 +163,8 @@ public class StandardConditionals implements ConditionalOperation {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+
+
     @Override
     public int hashCode() {
         int hash = 7;

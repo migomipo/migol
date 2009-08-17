@@ -36,7 +36,13 @@ import se.migomipo.migol2.execute.MigolExecutionSession;
  * conditional operation will be evaluated first. If the operation evaluates to
  * true, the statement will be executed. Otherwise, the statement will be
  * ignored and the program pointer progresses to the next statement.
+ *
+ * A ConditionalStatement object wraps an another {@link MigolStatement} object.
+ * It evaluates a {@link ConditionalOperation} object, and executes the wrapped
+ * {@link MigolStatement} object if the result is <pre>true</pre>.
  * @author John Eriksson
+ * @see MigolStatement
+ * @see ConditionalOperation
  */
 public class ConditionalStatement implements MigolStatement {
     private static final long serialVersionUID = -4829698528440668056L;
@@ -53,6 +59,15 @@ public class ConditionalStatement implements MigolStatement {
         this.statement = statement;
     }
 
+    /**
+     * Executes this conditional statement. It first evaluates it's
+     * {@link ConditionalOperation} object.
+     * If it evaluates to true, the wrapped statement will be executed, if false,
+     * it will progress the program pointer to the next statement
+     * @param session       The session object to be manipulated
+     * @throws se.migomipo.migol2.execute.MigolExecutionException   If an error
+     * occurs during execution.
+     */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
         boolean condres = cond.evaluate(session);
         if(condres){
@@ -61,13 +76,13 @@ public class ConditionalStatement implements MigolStatement {
             session.progressPP();
         }
     }
-
+    /**
+     * {@inheritDoc MigolStatement}
+     */
     public String toMigolSyntax() {
         return statement.toMigolSyntax() + cond.toMigolSyntax();
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -85,9 +100,7 @@ public class ConditionalStatement implements MigolStatement {
         }
         return true;
     }
-    /**
-     * {@inheritDoc}
-     */
+    
     @Override
     public int hashCode() {
         int hash = 5;

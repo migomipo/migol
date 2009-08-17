@@ -32,24 +32,37 @@ import java.io.Reader;
 
 
 /**
+ * The standard I/O callback methods, used by the command line Migol program.
+ * 
+ * It reads data from {@code System.in} and prints to {@code System.out}
  *
  * @author John Eriksson
  */
 public class StandardIOCallback implements MigolIOCallback {
     private Reader read;
     private PrintStream write;
+    /**
+     * Creates a new standard IO callback object.
+     */
     public StandardIOCallback(){
         read = new InputStreamReader(System.in);
         write = System.out;        
     }
+    /**
+     * {@inheritDoc MigolIOCallback}
+     */
     public int inputValue() throws IOException {
         return read.read();
     }
-
+    /**
+     * {@inheritDoc MigolIOCallback}
+     */
     public void outputChar(int value) throws IOException {
         write.print((char) value);
     }
-
+    /**
+     * {@inheritDoc MigolIOCallback}
+     */
     public void outputInt(int value) throws IOException {
         write.print(value);
     }
