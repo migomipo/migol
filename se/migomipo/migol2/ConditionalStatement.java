@@ -39,7 +39,7 @@ import se.migomipo.migol2.execute.MigolExecutionSession;
  *
  * A ConditionalStatement object wraps an another {@link MigolStatement} object.
  * It evaluates a {@link ConditionalOperation} object, and executes the wrapped
- * {@link MigolStatement} object if the result is <pre>true</pre>.
+ * {@link MigolStatement} object if the result is {@code true}.
  * @author John Eriksson
  * @see MigolStatement
  * @see ConditionalOperation

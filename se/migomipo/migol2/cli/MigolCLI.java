@@ -76,7 +76,7 @@ public class MigolCLI {
             }
             if (timing) {
                 long startparsetime = System.currentTimeMillis();
-                MigolParsedProgram prog = new MigolParser().parseFile(filename);
+                MigolParsedProgram prog = MigolParser.parseFile(filename);
                 long totalparsetime = System.currentTimeMillis() - startparsetime;
                 System.out.println("Parse time : " + totalparsetime + " ms");
                 System.gc();
@@ -86,7 +86,7 @@ public class MigolCLI {
                 System.out.println("Execution time : " + totalexectime + " ms");
 
             } else {
-                MigolParsedProgram prog = new MigolParser().parseFile(filename);
+                MigolParsedProgram prog = MigolParser.parseFile(filename);
                 System.gc();
                 prog.executeProgram(new MigolExecutionSession());
             }
