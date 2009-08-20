@@ -46,6 +46,10 @@ Improved error messages
 2.2.1
 More restructuring of MigolParsingException
 
+2.3.0
+Improved MigolParser, now you can parse several files at the same time!
+More comments/documentation.
+
 
 
 
