@@ -26,10 +26,9 @@
 package se.migomipo.migol2.cli;
 
 import se.migomipo.migol2.*;
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.parse.MigolParser;
-import se.migomipo.migol2.parse.MigolParsingException;
+import se.migomipo.migol2.execute.*;
+import se.migomipo.migol2.parse.*;
+import java.io.*;
 
 /**
  * The command line interface for Migol 09 2.3.
@@ -42,60 +41,80 @@ import se.migomipo.migol2.parse.MigolParsingException;
  */
 public class MigolCLI {
 
+    private static final String VERSION = "2.3.1";
+    private static final String VERSIONINFO =
+            "MigoMipo Migol 09 interpreter version " + VERSION + "\n" +
+            "\u00A9 2009 John Eriksson";
+    private static final String USAGEINFO =
+            "Usage: java -jar Migol2.jar [flags] [--] [filename]";
+    private static final String FLAGSINFO =
+            "Flags: \n" +
+            "  -e program      Ignore file name, and interpret line after \n" +
+            "                  flag (several -e's allowed)";
+
     public static void main(String[] args) {
-        try {
-            boolean ncommand = false;
-            String filename = null;
-            boolean timing = false;
-            for (String s : args) {
-                if (!ncommand && s.startsWith("-")) {
-                    String command = s.substring(1);
-                    if(command.equals("-version")){
-                        System.out.println("MigoMipo Migol 09 interpreter version 2.3.0");
-                        System.out.println("\u00A9 John Eriksson 2009");
-                        return;
-                    }
-                    else if (command.equals("t")) {
-                        timing = true;
-                    } else if(command.equals("-")){
-                        ncommand = true;
+        boolean filemode = true;
+        boolean flag = true;
+        String interpretline = "";
+
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (flag && arg.startsWith("-")) {
+                if (arg.equals("--version")) {
+                    System.out.println(VERSIONINFO);
+                    return;
+                }
+                if (arg.equals("--help")) {
+                    System.out.println(USAGEINFO);
+                    System.out.println(FLAGSINFO);
+                    return;
+                } else if (arg.equals("--")) {
+                    flag = false;
+                } else if (arg.equals("-e")) {
+                    filemode = false;
+                    if (i + 1 < args.length) {
+                        i++;
+                        interpretline = interpretline.concat(args[i] + "\n");
                     }
                 } else {
-                    filename = s;
-                    break;
+                    System.err.println("Error: Unknown flag \"" + arg + "\"");
+                    System.exit(1);
                 }
-            }
-            if (filename == null) {
-                System.err.println("MigoMipo Migol 09 interpreter version 2.2.1");
-                System.err.println("Usage: Migol2-0.jar [options] <filename>");
-                System.err.println("\u00A9 2009 John Eriksson \n");
-                System.err.println("Options : ");
-                System.err.println("  -t              Prints time taken for parsing and executing the program");
-                System.err.println("  --version       Prints version information and quits");
+            } else if (filemode) {
+                try {
+                    interpret(new FileReader(arg));
+                } catch (FileNotFoundException ex) {
+                    System.err.println("File not found");
+                    System.exit(1);
+                }
                 return;
-            }
-            if (timing) {
-                long startparsetime = System.currentTimeMillis();
-                MigolParsedProgram prog = MigolParser.parseFile(filename);
-                long totalparsetime = System.currentTimeMillis() - startparsetime;
-                System.out.println("Parse time : " + totalparsetime + " ms");
-                System.gc();
-                long startexectime = System.currentTimeMillis();
-                prog.executeProgram(new MigolExecutionSession());
-                long totalexectime = System.currentTimeMillis() - startexectime;
-                System.out.println("Execution time : " + totalexectime + " ms");
-
             } else {
-                MigolParsedProgram prog = MigolParser.parseFile(filename);
-                System.gc();
-                prog.executeProgram(new MigolExecutionSession());
-            }
+            } // Ignore if -e set and not a flag
+        }
+
+        if (interpretline.length() == 0) {
+            System.err.println(USAGEINFO);
+            System.exit(1);
+        } else {
+            interpret(new StringReader(interpretline));
+        }
+    }
+
+    private static void interpret(Reader read) {
+        try {
+            MigolParsedProgram prog = MigolParser.parse(read);
+            MigolExecutionSession session = new MigolExecutionSession();
+            prog.executeProgram(session);
+
+        } catch (IOException ex) {
+            System.err.println("I/O error: " + ex.getMessage());
+            System.exit(1);
         } catch (MigolParsingException ex) {
-            System.err.println("Parsing error : " + ex.getMessage());
+            System.err.println("Parsing error: " + ex.getMessage());
+            System.exit(1);
         } catch (MigolExecutionException ex) {
-            System.err.println("Execution error : " + ex.getMessage());
-        } catch (java.io.IOException ex) {
-            System.err.println("I/O error : " + ex.getMessage());
+            System.err.println("Execution error: " + ex.getMessage());
+            System.exit(1);
         }
 
     }
