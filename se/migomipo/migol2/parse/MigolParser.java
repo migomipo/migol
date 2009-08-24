@@ -277,11 +277,16 @@ public class MigolParser {
 
 
             if (c == '@') {
+                if(defers == 0){
+                    throw new MigolParsingException("Incorrect value " +
+                            "at line " + code.getLineNumber(), cLine, 
+                            code.getLineNumber(), strpos);
+                }
                 strpos++;
                 if (checkRightBrackets() != defers) {
-
                     throw new MigolParsingException("Incorrect value " +
-                            "at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+                            "at line " + code.getLineNumber(), cLine, 
+                            code.getLineNumber(), strpos);
                 }
                 return new InputBufferValue(defers);
             } else if (c == '#') {
