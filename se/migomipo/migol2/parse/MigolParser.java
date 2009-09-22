@@ -253,7 +253,7 @@ public class MigolParser {
             }
 
 
-        } catch (StringIndexOutOfBoundsException ex) {            
+        } catch (StringIndexOutOfBoundsException ex) {
             throw new MigolParsingException("Unexpected end of line at " +
                     "line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
         }
@@ -277,15 +277,15 @@ public class MigolParser {
 
 
             if (c == '@') {
-                if(defers == 0){
+                if (defers == 0) {
                     throw new MigolParsingException("Incorrect value " +
-                            "at line " + code.getLineNumber(), cLine, 
+                            "at line " + code.getLineNumber(), cLine,
                             code.getLineNumber(), strpos);
                 }
                 strpos++;
                 if (checkRightBrackets() != defers) {
                     throw new MigolParsingException("Incorrect value " +
-                            "at line " + code.getLineNumber(), cLine, 
+                            "at line " + code.getLineNumber(), cLine,
                             code.getLineNumber(), strpos);
                 }
                 return new InputBufferValue(defers);
@@ -332,11 +332,11 @@ public class MigolParser {
             throw new IllegalStateException();
         }
         strpos++;
-
-        if (cLine.charAt(strpos) == '$') {
+        char c = cLine.charAt(strpos);
+        if (c == '$') {
             // Relative operation, check for operator
             strpos++;
-            char c = cLine.charAt(strpos++);
+            c = cLine.charAt(strpos++);
             if (c == '+') {
                 return new StandardBinaryOperation(OP_PLUS, parseValue());
             } else if (c == '-') {
@@ -394,6 +394,9 @@ public class MigolParser {
                         "operator at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos - 1);
             // The pointer points to the character after the incorrect character
             }
+        } else if (c == '@') {
+            strpos++;
+            return InputAssignmentOperation.getInstance();
         } else {
             return new StandardBinaryOperation(OP_ASSIGN, parseValue());
         }
@@ -438,9 +441,6 @@ public class MigolParser {
             throw new MigolParsingException("Unknown conditional operator" +
                     " at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
         }
-
-
-
     }
 
     private int parseIntegerValue() throws MigolParsingException {
