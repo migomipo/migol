@@ -26,6 +26,8 @@
 package se.migomipo.migol2.parse;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.List;
 import java.util.LinkedList;
 import se.migomipo.migol2.*;
@@ -48,8 +50,8 @@ public class MigolParser {
     private transient int strpos;
     private transient String cLine;
 
-    private MigolParser() {
-        // Nothing here.
+    private MigolParser(Reader reader) {
+        code = new LineNumberReader(reader);
     }
 
     /**
@@ -63,7 +65,7 @@ public class MigolParser {
      */
     public static MigolParsedProgram parseFile(File file)
             throws IOException, MigolParsingException {
-        return new MigolParser().parseProgram(new FileReader(file));
+        return new MigolParser(new FileReader(file)).parseProgram();
     }
 
     /**
@@ -77,7 +79,7 @@ public class MigolParser {
      */
     public static MigolParsedProgram parseFile(FileDescriptor fd)
             throws IOException, MigolParsingException {
-        return new MigolParser().parseProgram(new FileReader(fd));
+        return new MigolParser(new FileReader(fd)).parseProgram();
     }
 
     /**
@@ -91,7 +93,7 @@ public class MigolParser {
      */
     public static MigolParsedProgram parseFile(String filename)
             throws IOException, MigolParsingException {
-        return new MigolParser().parseProgram(new FileReader(new File(filename)));
+        return new MigolParser(new FileReader(new File(filename))).parseProgram();
     }
 
     /**
@@ -105,7 +107,54 @@ public class MigolParser {
      */
     public static MigolParsedProgram parse(InputStream stream)
             throws IOException, MigolParsingException {
-        return new MigolParser().parseProgram(new InputStreamReader(stream));
+        return new MigolParser(new InputStreamReader(stream)).parseProgram();
+    }
+
+    /**
+     * Reads data from an {@link java.io.InputStream} object and parses it.
+     * @param stream    The {@link java.io.InputStream} object to be read.
+     * @param charsetname
+     *         The name of a supported
+     *         {@link java.nio.charset.Charset </code>charset<code>}
+     * @return  The parsed program.
+     * @throws java.io.IOException if an I/O error occurs while reading from
+     * the input stream.
+     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * if the parser encounters a syntax error.
+     */
+    public static MigolParsedProgram parse(InputStream stream, String charsetname)
+            throws IOException, MigolParsingException {
+        return new MigolParser(new InputStreamReader(stream, charsetname)).parseProgram();
+    }
+
+    /**
+     * Reads data from an {@link java.io.InputStream} object and parses it.
+     * @param stream    The {@link java.io.InputStream} object to be read.
+     * @param  cs       A charset
+     * @return  The parsed program.
+     * @throws java.io.IOException if an I/O error occurs while reading from
+     * the input stream.
+     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * if the parser encounters a syntax error.
+     */
+    public static MigolParsedProgram parse(InputStream stream, Charset charset)
+            throws IOException, MigolParsingException {
+        return new MigolParser(new InputStreamReader(stream, charset)).parseProgram();
+    }
+
+    /**
+     * Reads data from an {@link java.io.InputStream} object and parses it.
+     * @param stream    The {@link java.io.InputStream} object to be read.
+     * @param  dec      A charset decoder
+     * @return  The parsed program.
+     * @throws java.io.IOException if an I/O error occurs while reading from
+     * the input stream.
+     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * if the parser encounters a syntax error.
+     */
+    public static MigolParsedProgram parse(InputStream stream, CharsetDecoder charset)
+            throws IOException, MigolParsingException {
+        return new MigolParser(new InputStreamReader(stream, charset)).parseProgram();
     }
 
     /**
@@ -119,13 +168,12 @@ public class MigolParser {
      */
     public static MigolParsedProgram parse(Reader reader)
             throws IOException, MigolParsingException {
-        return new MigolParser().parseProgram(reader);
-
+        return new MigolParser(reader).parseProgram();
     }
 
-    private MigolParsedProgram parseProgram(Reader reader) throws IOException,
+    private MigolParsedProgram parseProgram() throws IOException,
             MigolParsingException {
-        code = new LineNumberReader(reader);
+
         statements = new LinkedList<MigolStatement>();
         String line = code.readLine(); // Process first line.
         if (line == null) {
