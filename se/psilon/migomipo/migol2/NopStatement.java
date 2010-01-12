@@ -20,39 +20,48 @@
  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE. 
- * 
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
-package se.migomipo.migol2;
 
-import java.io.Serializable;
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+package se.psilon.migomipo.migol2;
+
+import se.psilon.migomipo.migol2.execute.*;
+
 
 /**
- * Represents a single assignment operation.
+ * A NOP Operation statement, which does nothing except moving the program
+ * pointer to the next statement.
  *
- * These are executed in a sequence in a {@link AssignmentStatement}.
- *
+ * The NOP statement in Migol is <code>_</code>.
  * @author John Eriksson
- * @see AssignmentStatement
  */
-public interface AssignmentOperation extends Serializable {
-
+public class NopStatement implements MigolStatement {
+    private static final long serialVersionUID = 8187417599523176457L;
     /**
-     * Performs this operation.
-     * @param session   The session object to which the statement will be performed.
-     * @param currentvalue  The current value of the object to be modified.
-     * @return  The result of this operation.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
-     * If an error occurs during the operation.
+     * Singleton instance for a NopStatement. Since NopStatement objects contain
+     * no data, it is recommended to use this instance instead of creating
+     * NopStatement objects.
      */
-    public int operation(MigolExecutionSession session, int currentvalue) throws MigolExecutionException;
-
+    public static final NopStatement __INSTANCE__;
+    static {
+        __INSTANCE__ = new NopStatement();
+    }
     /**
-     * Returns a Migol syntax string representation of this assignment
-     * operation.
-     * @return  The conditional operation as a Migol syntactic string.
+     * Does nothing, besides increasing the program pointer by 1.
+     * @param session   The session object to which the statement will be
+     * performed.
+     *
      */
-    public String toMigolSyntax();
+    public void executeStatement(MigolExecutionSession session){
+        session.progressPP();
+    }
+    /**
+     * {@inheritDoc MigolStatement}
+     */
+    public String toMigolSyntax() {
+       return "_";
+    }
+
+
 }

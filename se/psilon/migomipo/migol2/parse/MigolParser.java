@@ -23,24 +23,24 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.parse;
+package se.psilon.migomipo.migol2.parse;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
 import java.util.LinkedList;
-import se.migomipo.migol2.*;
-import static se.migomipo.migol2.StandardBinaryOperation.*;
-import static se.migomipo.migol2.StandardConditionals.*;
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.*;
+import static se.psilon.migomipo.migol2.StandardBinaryOperation.*;
+import static se.psilon.migomipo.migol2.StandardConditionals.*;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 
 /**
  * Contains methods which parses Migol text strings into parsed program, which
  * then can be executed.
  *
- * @see se.migomipo.migol2.MigolParsedProgram
+ * @see se.psilon.migomipo.migol2.MigolParsedProgram
  * @author John Eriksson
  */
 public class MigolParser {
@@ -60,7 +60,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException  if an I/O error occurs while reading from
      * the file.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parseFile(File file)
@@ -74,7 +74,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException  if an I/O error occurs while reading from
      * the file.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parseFile(FileDescriptor fd)
@@ -88,7 +88,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException  if an I/O error occurs while reading from
      * the file.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parseFile(String filename)
@@ -102,7 +102,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException if an I/O error occurs while reading from
      * the input stream.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parse(InputStream stream)
@@ -119,7 +119,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException if an I/O error occurs while reading from
      * the input stream.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parse(InputStream stream, String charsetname)
@@ -134,7 +134,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException if an I/O error occurs while reading from
      * the input stream.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parse(InputStream stream, Charset charset)
@@ -149,7 +149,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException if an I/O error occurs while reading from
      * the input stream.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parse(InputStream stream, CharsetDecoder charset)
@@ -163,7 +163,7 @@ public class MigolParser {
      * @return  The parsed program.
      * @throws java.io.IOException if an I/O error occurs while reading from
      * the Reader.
-     * @throws se.migomipo.migol2.parse.MigolParsingException
+     * @throws se.psilon.migomipo.migol2.parse.MigolParsingException
      * if the parser encounters a syntax error.
      */
     public static MigolParsedProgram parse(Reader reader)

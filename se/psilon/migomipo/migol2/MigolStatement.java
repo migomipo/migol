@@ -23,45 +23,31 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
+package se.psilon.migomipo.migol2;
 
-package se.migomipo.migol2;
-
-import se.migomipo.migol2.execute.*;
-
+import java.io.Serializable;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
- * A NOP Operation statement, which does nothing except moving the program
- * pointer to the next statement.
- *
- * The NOP statement in Migol is <code>_</code>.
+ * This interface represents an executable Migol statement.
  * @author John Eriksson
  */
-public class NopStatement implements MigolStatement {
-    private static final long serialVersionUID = 8187417599523176457L;
+public interface MigolStatement extends Serializable{
     /**
-     * Singleton instance for a NopStatement. Since NopStatement objects contain
-     * no data, it is recommended to use this instance instead of creating
-     * NopStatement objects.
-     */
-    public static final NopStatement __INSTANCE__;
-    static {
-        __INSTANCE__ = new NopStatement();
-    }
-    /**
-     * Does nothing, besides increasing the program pointer by 1.
+     * Executes the statement.
      * @param session   The session object to which the statement will be
      * performed.
-     *
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
+     * if an error occurs during execution.
      */
-    public void executeStatement(MigolExecutionSession session){
-        session.progressPP();
-    }
+    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException;
     /**
-     * {@inheritDoc MigolStatement}
+     * Returns a Migol string representation of this statement.
+     *
+     * This method can be used to convert parsed statement back to a Migol text
+     * program.
+     * @return  A Migol syntax string of this statement.
      */
-    public String toMigolSyntax() {
-       return "_";
-    }
-
-
+    public String toMigolSyntax();
 }

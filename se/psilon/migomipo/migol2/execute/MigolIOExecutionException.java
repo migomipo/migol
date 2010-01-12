@@ -1,4 +1,4 @@
-package se.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2.execute;
 
 /**
  *  Signals that an I/O error has occured during execution of a Migol program.

@@ -24,17 +24,17 @@
  *
  */
 
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 
 /**
  * The set of the standard conditional operators in Migol.
  *
  * The standard set implements several common integer comparison operators.
  * All of the operators
- * {@link MigolValue#fetchValue(se.migomipo.migol2.execute.MigolExecutionSession) fetches}
+ * {@link MigolValue#fetchValue(se.psilon.migomipo.migol2.execute.MigolExecutionSession) fetches}
  * the value of a {@link MigolValue} object and compares it with 0.
  * The available operators are:
  * <ol>
@@ -100,7 +100,7 @@ public class StandardConditionals implements ConditionalOperation {
      *
      * @param session
      * @return  The result of the comparison as a boolean.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      */
     public boolean evaluate(MigolExecutionSession session) throws MigolExecutionException {
         int val = value.fetchValue(session);

@@ -23,10 +23,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 
 /**
  * Represents a conditional statement.
@@ -65,7 +65,7 @@ public class ConditionalStatement implements MigolStatement {
      * If it evaluates to true, the wrapped statement will be executed, if false,
      * it will progress the program pointer to the next statement
      * @param session       The session object to be manipulated
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If an error
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If an error
      * occurs during execution.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {

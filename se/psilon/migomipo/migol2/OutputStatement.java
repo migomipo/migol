@@ -23,11 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolIOExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolIOExecutionException;
 
 /**
  * An output statement, which prints a character or number to output.
@@ -38,8 +38,8 @@ import se.migomipo.migol2.execute.MigolIOExecutionException;
  * the value as a character, and the &gt;- prints out the value as a number.
  *
  * {@link OutputStatement} objects print data by calling the
- * {@link se.migomipo.migol2.execute.MigolIOCallback} object of the
- * {@link se.migomipo.migol2.execute.MigolExecutionSession}.
+ * {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object of the
+ * {@link se.psilon.migomipo.migol2.execute.MigolExecutionSession}.
  *
  * There are two modes available for {@link OutputStatement} objects, print as
  * byte (&gt;) and print as integer (&gt;-). The integer mode converts the value
@@ -64,9 +64,9 @@ public class OutputStatement implements MigolStatement {
     /**
      * Performs this statement, and prints the value to the screen.
      * @param session   The session that the value is fetched from.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If the selected mode is unknown.
-     * @throws se.migomipo.migol2.execute.MigolIOExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolIOExecutionException
      * If an I/O error occurs while trying to print the value.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {

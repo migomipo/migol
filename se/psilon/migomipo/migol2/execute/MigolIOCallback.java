@@ -24,10 +24,10 @@
  *
  */
 
-package se.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2.execute;
 
-import se.migomipo.migol2.InputBufferValue;
-import se.migomipo.migol2.OutputStatement;
+import se.psilon.migomipo.migol2.InputBufferValue;
+import se.psilon.migomipo.migol2.OutputStatement;
 
 /**
  * An interface representing the available I/O functions in Migol.

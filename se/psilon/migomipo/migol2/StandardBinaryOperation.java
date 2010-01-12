@@ -24,10 +24,10 @@
  *
  */
 
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 /**
  * This class contains the set of the standard assignment operations in
  * Migol 09. These take a value, performs the operations and returns the result
@@ -149,7 +149,7 @@ public class StandardBinaryOperation implements AssignmentOperation {
      * @param session   The session object to which the statement will be performed.
      * @param currentvalue  The left side value of this operation.
      * @return  The result of this operation.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If the operation constant is unknown.
      */
     public int operation(MigolExecutionSession session, int currentvalue) throws MigolExecutionException {

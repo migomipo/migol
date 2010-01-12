@@ -23,11 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
-import se.migomipo.migol2.execute.MigolIOExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolIOExecutionException;
 
 /**
  * Represents the input buffer.
@@ -40,11 +40,11 @@ import se.migomipo.migol2.execute.MigolIOExecutionException;
  * or assign to @, an exception will be thrown.
  *
  * The InputBufferValue object reads a value by calling the
- * {@link se.migomipo.migol2.execute.MigolIOCallback} object of the
- * {@link se.migomipo.migol2.execute.MigolExecutionSession} session object.
+ * {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object of the
+ * {@link se.psilon.migomipo.migol2.execute.MigolExecutionSession} session object.
  *
  *
- * @see se.migomipo.migol2.execute.MigolIOCallback
+ * @see se.psilon.migomipo.migol2.execute.MigolIOCallback
  * @author John Eriksson
  */
 public class InputBufferValue implements MigolValue {
@@ -69,26 +69,26 @@ public class InputBufferValue implements MigolValue {
     }
     /**
      * Reads a value by calling the
-     * {@link se.migomipo.migol2.execute.MigolIOCallback} object. If the number
+     * {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object. If the number
      * of deferring levels are higher than 1, memory deferring will also occur.
      *
-     * If {@link InputBufferValue#fetchValue(se.migomipo.migol2.execute.MigolExecutionSession) }
+     * If {@link InputBufferValue#fetchValue(se.psilon.migomipo.migol2.execute.MigolExecutionSession) }
      * is called on an {@link InputBufferValue} object with no deferring, a
-     * {@link se.migomipo.migol2.execute.MigolExecutionException} is thrown.
+     * {@link se.psilon.migomipo.migol2.execute.MigolExecutionException} is thrown.
      * This is because @ should be seen as a pointer to the input buffer, and
      * doesn't have a value by itself.
      *
      * Like in all the other value types, a
-     * {@link se.migomipo.migol2.execute.MigolExecutionException} is thrown if
+     * {@link se.psilon.migomipo.migol2.execute.MigolExecutionException} is thrown if
      * the deferring loop tries to read the value from a negative memory address.
      *
      * @param session   The session used for fetching the value.
      * @return  The resulting value as an 32-bit signed integer (as Java 
      * defines the int data type).
-     * @see se.migomipo.migol2.execute.MigolIOCallback
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the object represents @ and is used as an immediate value.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address.
-     * * @throws se.migomipo.migol2.execute.MigolIOExecutionException   If an I/O error occurs while trying to read the value.
+     * @see se.psilon.migomipo.migol2.execute.MigolIOCallback
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If the object represents @ and is used as an immediate value.
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address.
+     * * @throws se.psilon.migomipo.migol2.execute.MigolIOExecutionException   If an I/O error occurs while trying to read the value.
      */
     public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
 

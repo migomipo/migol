@@ -23,7 +23,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2.execute;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -38,7 +38,7 @@ import java.util.Arrays;
  * Session objects contain the current state of a running program, which is
  * the memory and the program counter. It also specifies the input and output
  * streams which will be used in the program.
- * @see se.migomipo.migol2.MigolParsedProgram
+ * @see se.psilon.migomipo.migol2.MigolParsedProgram
  * @author John Eriksson
  */
 public class MigolExecutionSession {
@@ -110,9 +110,9 @@ public class MigolExecutionSession {
         pp++;
     }
     /**
-     * Returns the {@link se.migomipo.migol2.execute.MigolIOCallback} object for
+     * Returns the {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object for
      * this session.
-     * @return  The {@link se.migomipo.migol2.execute.MigolIOCallback} object.
+     * @return  The {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object.
      */
     public MigolIOCallback getIOCallback() {
         return iocallback;

@@ -24,10 +24,10 @@
  *
  */
 
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
  * Represents an integer-addressed or immediate value expression.
@@ -92,7 +92,7 @@ public class IntegerValue implements MigolValue {
      * @param session   The session that the value is fetched from.
      * @return The resulting value as an 32-bit signed integer (as Java defines
      * the int data type).
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If the
      * deferring encounters a negative memory address
      */
     public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {

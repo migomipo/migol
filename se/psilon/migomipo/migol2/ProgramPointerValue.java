@@ -24,10 +24,10 @@
  *
  */
 
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
  * Represents the program pointer or a program pointer-deferred expression.
@@ -69,13 +69,13 @@ public class ProgramPointerValue implements MigolValue {
     /**
      * Fetches the value of this expression in the session.
      *
-     * Throws an {@link se.migomipo.migol2.execute.MigolExecutionException
+     * Throws an {@link se.psilon.migomipo.migol2.execute.MigolExecutionException
      * MigolExecutionException} if it encounters a negative memory address
      * deferring or tries to use the program pointer as an immediate value.
      * @param session   The session object which will be manipulated.
      * @return  The resulting integer.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the object represents #
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If the object represents #
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If the deferring encounters a negative memory address
      */
     public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
         if (defers == 0) {

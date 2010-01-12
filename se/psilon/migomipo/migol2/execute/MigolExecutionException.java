@@ -23,12 +23,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2.execute;
 
 /**
  * This exception is thrown when an error occurs during the execution of a
  * parsed Migol program.
- * @see se.migomipo.migol2.MigolParsedProgram
+ * @see se.psilon.migomipo.migol2.MigolParsedProgram
  * @author John Eriksson
  */
 public class MigolExecutionException extends Exception {

@@ -23,20 +23,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.cli;
+package se.psilon.migomipo.migol2.cli;
 
-import se.migomipo.migol2.*;
-import se.migomipo.migol2.execute.*;
-import se.migomipo.migol2.parse.*;
+import se.psilon.migomipo.migol2.*;
+import se.psilon.migomipo.migol2.execute.*;
+import se.psilon.migomipo.migol2.parse.*;
 import java.io.*;
 
 /**
  * The command line interface for Migol 09 2.3.
  *
  * The program reads a file, parses and executes it.
- * @see se.migomipo.migol2.parse.MigolParser
- * @see se.migomipo.migol2.MigolParsedProgram
- * @see se.migomipo.migol2.execute.MigolExecutionSession
+ * @see se.psilon.migomipo.migol2.parse.MigolParser
+ * @see se.psilon.migomipo.migol2.MigolParsedProgram
+ * @see se.psilon.migomipo.migol2.execute.MigolExecutionSession
  * @author John Eriksson
  */
 public class MigolCLI {

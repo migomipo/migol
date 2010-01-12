@@ -23,11 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
 import java.util.Arrays;
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 
 /**
@@ -85,7 +85,7 @@ public class AssignmentStatement implements MigolStatement {
      *
      * 
      * @param session   The session object to which the statement will be performed.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException If an error
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {       
@@ -103,7 +103,7 @@ public class AssignmentStatement implements MigolStatement {
     /**
      * Performs a branch operation.
      * @param session   The session object to which the statement will be performed.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException   If an error
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If an error
      * occurs during the operation.
      */
     private void executeBranch(MigolExecutionSession session) throws MigolExecutionException {
@@ -124,7 +124,7 @@ public class AssignmentStatement implements MigolStatement {
     /**
      * Performs a memory modification operation.
      * @param session   The session object to which the statement will be performed.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException If an error
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
      */
     private void executeMemoryModification(MigolExecutionSession session) throws MigolExecutionException {

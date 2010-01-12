@@ -1,7 +1,7 @@
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
 import java.io.IOException;
-import se.migomipo.migol2.execute.*;
+import se.psilon.migomipo.migol2.execute.*;
 
 
 /**

@@ -20,34 +20,39 @@
  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
+ * OTHER DEALINGS IN THE SOFTWARE. 
+ * 
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
- * This interface represents an executable Migol statement.
+ * Represents a single assignment operation.
+ *
+ * These are executed in a sequence in a {@link AssignmentStatement}.
+ *
  * @author John Eriksson
+ * @see AssignmentStatement
  */
-public interface MigolStatement extends Serializable{
+public interface AssignmentOperation extends Serializable {
+
     /**
-     * Executes the statement.
-     * @param session   The session object to which the statement will be
-     * performed.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
-     * if an error occurs during execution.
+     * Performs this operation.
+     * @param session   The session object to which the statement will be performed.
+     * @param currentvalue  The current value of the object to be modified.
+     * @return  The result of this operation.
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
+     * If an error occurs during the operation.
      */
-    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException;
+    public int operation(MigolExecutionSession session, int currentvalue) throws MigolExecutionException;
+
     /**
-     * Returns a Migol string representation of this statement.
-     *
-     * This method can be used to convert parsed statement back to a Migol text
-     * program.
-     * @return  A Migol syntax string of this statement.
+     * Returns a Migol syntax string representation of this assignment
+     * operation.
+     * @return  The conditional operation as a Migol syntactic string.
      */
     public String toMigolSyntax();
 }

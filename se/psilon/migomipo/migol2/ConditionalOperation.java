@@ -23,48 +23,39 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.execute;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.Reader;
+package se.psilon.migomipo.migol2;
 
+import java.io.Serializable;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
- * The standard I/O callback methods, used by the command line Migol program.
- * 
- * It reads data from {@code System.in} and prints to {@code System.out}
+ * Defines a conditional operation.
+ *
+ * Each conditional operation can be evaluated with a
+ * {@link se.psilon.migomipo.migol2.execute.MigolExecutionSession}, and return true or
+ * false, likely using the current session data for the evaluation.
+ *
+ *
  *
  * @author John Eriksson
  */
-public class StandardIOCallback implements MigolIOCallback {
-    private Reader read;
-    private PrintStream write;
-    /**
-     * Creates a new standard IO callback object.
-     */
-    public StandardIOCallback(){
-        read = new InputStreamReader(System.in);
-        write = System.out;        
-    }
-    /**
-     * {@inheritDoc MigolIOCallback}
-     */
-    public int inputValue() throws IOException {
-        return read.read();
-    }
-    /**
-     * {@inheritDoc MigolIOCallback}
-     */
-    public void outputChar(int value) throws IOException {
-        write.print((char) value);
-    }
-    /**
-     * {@inheritDoc MigolIOCallback}
-     */
-    public void outputInt(int value) throws IOException {
-        write.print(value);
-    }
+public interface ConditionalOperation extends Serializable {
 
+    /**
+     * Evaluates the expression on the session given as an argument, and returns
+     * the result.
+     * @param session   The session where the expression is evaluated.
+     * @return  The result of the expression, as a boolean.
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
+     * If an error occurs during the operation.
+     */
+    public boolean evaluate(MigolExecutionSession session) throws MigolExecutionException;
+    /**
+     * Returns a Migol syntax string representation of this conditional operation
+     * as a conditional suffix.
+     * @return  The conditional operation as a Migol syntactic string.
+     */
+    public String toMigolSyntax();
 }

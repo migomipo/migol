@@ -23,11 +23,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import se.migomipo.migol2.execute.*;
+import se.psilon.migomipo.migol2.execute.*;
 
 /**
  * A pre-parsed Migol program that can be executed on a {@link MigolExecutionSession}.
@@ -64,7 +64,7 @@ public class MigolParsedProgram implements Serializable {
      * memory content will still be preserved when execution starts.
      * @param session   The session which will be manipulated in this program
      * execution.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If an error occurs during execution.
      */
     public void executeProgram(MigolExecutionSession session) throws MigolExecutionException {
@@ -83,7 +83,7 @@ public class MigolParsedProgram implements Serializable {
      * pointer of the {@link MigolExecutionSession} object.
      * @param session   The session which will be manipulated in this program
      * execution.
-     * @throws se.migomipo.migol2.execute.MigolExecutionException
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      */
     public void executeStep(MigolExecutionSession session) throws MigolExecutionException {
         int currentpp = session.getPP();

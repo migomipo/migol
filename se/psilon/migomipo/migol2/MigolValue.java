@@ -23,10 +23,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2;
+package se.psilon.migomipo.migol2;
 
-import se.migomipo.migol2.execute.MigolExecutionSession;
-import se.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
  * Represents an accessible value in the Migol environment.
@@ -42,7 +42,7 @@ public interface MigolValue extends java.io.Serializable {
      * @param session     The session used for fetching the value.
      * @return  The resulting value as an 32-bit signed integer (as Java defines
      * the int data type).
-     * @throws se.migomipo.migol2.execute.MigolExecutionException  If an error
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException  If an error
      * occurs while fetching the value.
      *
      */

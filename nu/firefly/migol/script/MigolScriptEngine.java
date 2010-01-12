@@ -3,9 +3,9 @@ package nu.firefly.migol.script;
 
 import java.io.*;
 import javax.script.*;
-import se.migomipo.migol2.*;
-import se.migomipo.migol2.execute.*;
-import se.migomipo.migol2.parse.*;
+import se.psilon.migomipo.migol2.*;
+import se.psilon.migomipo.migol2.execute.*;
+import se.psilon.migomipo.migol2.parse.*;
 
 
 /**

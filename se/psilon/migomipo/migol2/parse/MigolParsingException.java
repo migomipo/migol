@@ -23,12 +23,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.migomipo.migol2.parse;
+package se.psilon.migomipo.migol2.parse;
 
 /**
  * Signaled by the parser whenever a syntax error has been found in the parsed
  * text.
- * @see se.migomipo.migol2.parse.MigolParser
+ * @see se.psilon.migomipo.migol2.parse.MigolParser
  * @author John Eriksson
  */
 public class MigolParsingException extends Exception {
