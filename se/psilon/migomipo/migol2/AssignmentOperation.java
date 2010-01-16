@@ -37,7 +37,84 @@ import se.psilon.migomipo.migol2.execute.MigolExecutionException;
  * @author John Eriksson
  * @see AssignmentStatement
  */
-public interface AssignmentOperation extends Serializable {
+public class AssignmentOperation implements Serializable {
+
+    /**
+     * Constant representing an absolute assignment operation.
+     */
+    public static final int OP_ASSIGN = 1;
+    // <
+    /**
+     * Constant representing an addition operation.
+     */
+    public static final int OP_PLUS = 2;
+    // <$+
+    /**
+     * Constant representing a subtraction operation.
+     */
+    public static final int OP_MINUS = 3;
+    // <$-
+    /**
+     * Constant representing a multiplication operation.
+     */
+    public static final int OP_TIMES = 4;
+    // <$*
+    /**
+     * Constant representing a division operation.
+     */
+    public static final int OP_DIVIDE = 5;
+    // <$/
+    /**
+     * Constant representing a modulo operation.
+     */
+    public static final int OP_MOD = 6;
+    // <$%
+    /**
+     * Constant representing a bitwise AND operation.
+     */
+    public static final int OP_AND = 7;
+    // <$&
+    /**
+     * Constant representing a bitwise OR operation.
+     */
+    public static final int OP_OR = 8;
+    // <$|
+    /**
+     * Constant representing a bitwise XOR operation.
+     */
+    public static final int OP_XOR = 9;
+    // <$^
+    /**
+     * Constant representing a left bitshift operation.
+     */
+    public static final int OP_LSH = 10;
+    // <$<<
+    /**
+     * Constant representing a right arithmetic bitshift operation.
+     */
+    public static final int OP_RSHA = 11;
+    // <$>>
+    /**
+     * Constant representing a right logical bitshift operation.
+     */
+    public static final int OP_RSHL = 12;
+    // <$>>>
+    /**
+     * Constant representing a left bit rotation operation.
+     */
+    public static final int OP_LRO = 13;
+    // <$<<_
+    /**
+     * Constant representing a right rotation operation.
+     */
+    public static final int OP_RRO = 14;
+    private final int operation;
+    private final MigolValue value;
+
+    public AssignmentOperation(int operation, MigolValue val) {
+        this.operation = operation;
+        this.value = val;
+    }
 
     /**
      * Performs this operation.
@@ -47,12 +124,109 @@ public interface AssignmentOperation extends Serializable {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If an error occurs during the operation.
      */
-    public int operation(MigolExecutionSession session, int currentvalue) throws MigolExecutionException;
+    public void operation(MigolExecutionSession session, int address) throws MigolExecutionException {
+        int result;
+        if (operation == OP_ASSIGN) {
+            result = value.fetchValue(session);
+
+        } else {
+            int currentvalue = session.registerGet(address);
+            int cal = value.fetchValue(session);
+
+            switch (operation) {
+                case OP_PLUS:
+                    result = currentvalue + cal;
+                    break;
+                case OP_MINUS:
+                    result = currentvalue - cal;
+                    break;
+                case OP_TIMES:
+                    result = currentvalue * cal;
+                    break;
+                case OP_DIVIDE:
+                    result = currentvalue / cal;
+                    break;
+                case OP_MOD:
+                    result = currentvalue % cal;
+                    break;
+                case OP_AND:
+                    result = currentvalue & cal;
+                    break;
+                case OP_OR:
+                    result = currentvalue | cal;
+                    break;
+                case OP_XOR:
+                    result = currentvalue ^ cal;
+                    break;
+                case OP_LSH:
+                    result = currentvalue << cal;
+                    break;
+                case OP_RSHA:
+                    result = currentvalue >> cal;
+                    break;
+                case OP_RSHL:
+                    result = currentvalue >>> cal;
+                    break;
+                case OP_LRO:
+                    result = rotl(currentvalue, cal);
+                    break;
+                case OP_RRO:
+                    result = rotr(currentvalue, cal);
+                    break;
+                default:
+                    throw new MigolExecutionException("Unknown operator at statement " + session.getPP(), session.getPP());
+            }
+        }
+        session.registerPut(address, result);
+    }
+
+    private int rotl(int value, int shift) {
+        shift &= 31;
+        return (value << shift) | (value >>> (32 - shift));
+    }
+
+    private int rotr(int value, int shift) {
+        shift &= 31;
+        return (value >>> shift) | (value << (32 - shift));
+    }
 
     /**
      * Returns a Migol syntax string representation of this assignment
      * operation.
      * @return  The conditional operation as a Migol syntactic string.
      */
-    public String toMigolSyntax();
+    public String toMigolSyntax() {
+        switch (operation) {
+            case OP_ASSIGN:
+                return "<" + value.toMigolSyntax();
+            case OP_PLUS:
+                return "<$+" + value.toMigolSyntax();
+            case OP_MINUS:
+                return "<$-" + value.toMigolSyntax();
+            case OP_TIMES:
+                return "<$*" + value.toMigolSyntax();
+            case OP_DIVIDE:
+                return "<$/" + value.toMigolSyntax();
+            case OP_MOD:
+                return "<$%" + value.toMigolSyntax();
+            case OP_AND:
+                return "<$&" + value.toMigolSyntax();
+            case OP_OR:
+                return "<$|" + value.toMigolSyntax();
+            case OP_XOR:
+                return "<$^" + value.toMigolSyntax();
+            case OP_LSH:
+                return "<$<<" + value.toMigolSyntax();
+            case OP_RSHA:
+                return "<$>>" + value.toMigolSyntax();
+            case OP_RSHL:
+                return "<$>>>" + value.toMigolSyntax();
+            case OP_LRO:
+                return "<$<<_" + value.toMigolSyntax();
+            case OP_RRO:
+                return "<$>>_" + value.toMigolSyntax();
+            default:
+                throw new IllegalStateException();
+        }
+    }
 }

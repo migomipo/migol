@@ -88,6 +88,22 @@ public class MigolParsingException extends Exception {
         return this.getMessage();
     }
 
+    public String getErrorline() {
+        return errorline;
+    }
+
+    public String getErrorpointer() {
+        return errorpointer;
+    }
+
+    public int getErrorpos() {
+        return errorpos;
+    }
+
+    public int getLinenumber() {
+        return linenumber;
+    }
+
     private String generateErrorPointer() {
         StringBuffer s = new StringBuffer();
         s.append("\t" + errorline + "\n\t");

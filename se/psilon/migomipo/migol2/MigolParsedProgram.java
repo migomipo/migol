@@ -108,6 +108,9 @@ public class MigolParsedProgram implements Serializable {
         this.statements = statements;
     }
 
+    public MigolStatement[] getStatements(){
+        return Arrays.copyOf(statements, statements.length);
+    }
     
     @Override
     public boolean equals(Object obj) {

@@ -29,7 +29,6 @@ import java.util.Arrays;
 import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
-
 /**
  * Represents a Migol assignment statement.
  *
@@ -51,17 +50,27 @@ import se.psilon.migomipo.migol2.execute.MigolExecutionException;
  * @author John Eriksson
  */
 public class AssignmentStatement implements MigolStatement {
+
     private static final long serialVersionUID = -7856706192040130177L;
     /**
      * The target address.
      */
-    MigolValue target;
+    private MigolValue target;
     /**
      * The assignment operators.
      */
-    AssignmentOperation[] ops;
-    
+    private AssignmentOperation[] operations;
 
+
+    /**
+     * Creates a new object, representing a Migol assignment statement.
+     * @param target    The target address.
+     * @param operation The set of operations to be performed on the target address.
+     */
+    public AssignmentStatement(MigolValue target, AssignmentOperation[] operation) {
+        this.target = target;
+        this.operations = operation;
+    }
     /**
      * Executes the assignment statement.
      *
@@ -88,63 +97,20 @@ public class AssignmentStatement implements MigolStatement {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
      */
-    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {       
-        if (target instanceof ProgramPointerValue && ((ProgramPointerValue) target).getDefers() == 0) {
-            // Target is the program pointer, modify it.
-            executeBranch(session);
-        } else {
-            // Otherwise, modify the memory position and progress the program
-            // counter.
-            executeMemoryModification(session);
+    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
+        boolean hasbranched = false;
+        for(AssignmentOperation op : operations){
+            int targetaddress = target.fetchValue(session);
+            if(targetaddress == -1){
+                hasbranched = true;
+            }
+            op.operation(session, targetaddress);
+        }
+        if(!hasbranched){
             session.progressPP();
         }
     }
 
-    /**
-     * Performs a branch operation.
-     * @param session   The session object to which the statement will be performed.
-     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException   If an error
-     * occurs during the operation.
-     */
-    private void executeBranch(MigolExecutionSession session) throws MigolExecutionException {
-        int currentpp = session.getPP();
-        int calpp = currentpp;
-        // Stores current program pointer value for error messages.
-        for (AssignmentOperation op : ops) {
-            calpp = op.operation(session, calpp);
-        }
-        session.setPP(calpp);
-
-        if (session.getPP() <= 0) {
-            throw new MigolExecutionException("Program pointer were set to non-positive value at statement " + currentpp,currentpp);
-        }
-
-    }
-
-    /**
-     * Performs a memory modification operation.
-     * @param session   The session object to which the statement will be performed.
-     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
-     * occurs during the operation.
-     */
-    private void executeMemoryModification(MigolExecutionSession session) throws MigolExecutionException {
-
-        int[] memory = session.getMemory();
-        for (AssignmentOperation op : ops) {
-            int destination = target.fetchValue(session); // The value to be modified
-            int curr = memory[destination]; // The current value
-            memory[destination] = op.operation(session, curr); // Performs operation and writes new value
-        }
-    }
-    /**
-     * Creates a new object, representing a Migol assignment statement.
-     * @param target    The target address.
-     * @param operation The set of operations to be performed on the target address.
-     */
-    public AssignmentStatement(MigolValue target, AssignmentOperation[] operation) {
-        this.target = target;
-        this.ops = operation;       
-    }
     /**
      *
      * {@inheritDoc MigolStatement}
@@ -152,12 +118,20 @@ public class AssignmentStatement implements MigolStatement {
     public String toMigolSyntax() {
         StringBuffer buff = new StringBuffer();
         buff.append(target.toMigolSyntax());
-        for(AssignmentOperation op : ops){
+        for (AssignmentOperation op : operations) {
             buff.append(op.toMigolSyntax());
-        }        
+        }
         return buff.toString();
     }
-    
+
+    public MigolValue getTarget() {
+        return target;
+    }
+
+    public AssignmentOperation[] getOperations() {
+        return Arrays.copyOf(operations, operations.length);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -170,19 +144,17 @@ public class AssignmentStatement implements MigolStatement {
         if (this.target != other.target && (this.target == null || !this.target.equals(other.target))) {
             return false;
         }
-        if (this.ops != other.ops && (this.ops == null || !Arrays.equals(this.ops,other.ops))) {
+        if (this.operations != other.operations && (this.operations == null || !Arrays.equals(this.operations, other.operations))) {
             return false;
         }
         return true;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;
         hash = 37 * hash + (this.target != null ? this.target.hashCode() : 0);
-        hash = 37 * hash + (this.ops != null ? this.ops.hashCode() : 0);
+        hash = 37 * hash + (this.operations != null ? this.operations.hashCode() : 0);
         return hash;
     }
-
-
 }

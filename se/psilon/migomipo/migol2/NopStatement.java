@@ -63,5 +63,13 @@ public class NopStatement implements MigolStatement {
        return "_";
     }
 
+    public MigolValue getTarget() {
+        return null;
+    }
+
+    public AssignmentOperation[] getOperations() {
+        return new AssignmentOperation[0];
+    }
+
 
 }

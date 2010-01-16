@@ -29,13 +29,12 @@ public class MigolScriptEngine extends AbstractScriptEngine {
 			throws ScriptException {
 		MigolParsedProgram program;		
 			// Create new session (a bit uglyish).
-		MigolIOCallback callback = new ScriptContextIOCallback(context);
-		session = new MigolExecutionSession(callback);
+		session = new MigolExecutionSession();
 		
 		try {
 			program = MigolParser.parse(reader);
                         program.executeProgram(session);
-                        context.getWriter().flush();
+                        //context.getWriter().flush();
 		} catch (MigolParsingException ex) {
 			throw new ScriptException(ex);
 		} catch (IOException ex) {
@@ -44,14 +43,16 @@ public class MigolScriptEngine extends AbstractScriptEngine {
 			throw new ScriptException(ex);
 		}
 		
-		return session.getMemory();
+		return session;
 	}
 	@Override
 	public Object get(String key) {
-		if (key.matches("\\d+"))
-			return session.getMemory()[Integer.parseInt(key)];
-		else
-			throw new IllegalArgumentException("Valid Migol keys has to be memory indices.");
+		try {
+			return session.registerGet(Integer.parseInt(key));}
+		catch(NumberFormatException ex){
+			throw new IllegalArgumentException("Valid Migol keys has to be memory indices.");}
+                catch(MigolExecutionException ex){
+			throw new RuntimeException("Failed to get Migol value from key");}
 	}
 	@Override
 	public Bindings getBindings(int scope) {
@@ -88,29 +89,5 @@ public class MigolScriptEngine extends AbstractScriptEngine {
 	public void setContext(ScriptContext context) {
 		this.context = context;
 	}
-	
-	private class ScriptContextIOCallback implements MigolIOCallback {
-		private Reader reader;
-		private Writer writer;
 		
-		public ScriptContextIOCallback(ScriptContext context) {
-			this.reader = context.getReader();
-			this.writer = context.getWriter();
-		}
-		
-		@Override
-		public int inputValue() throws IOException {
-			throw new UnsupportedOperationException("Input? In a server side language? Wtf?");
-		}
-		@Override
-		public void outputChar(int value) throws IOException {
-			writer.write(value);
-			writer.flush();
-		}
-		@Override
-		public void outputInt(int value) throws IOException {
-			writer.write(Integer.toString(value));
-			writer.flush();
-		}
-	}  
 }

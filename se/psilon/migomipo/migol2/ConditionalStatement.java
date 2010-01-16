@@ -45,17 +45,50 @@ import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
  * @see ConditionalOperation
  */
 public class ConditionalStatement implements MigolStatement {
+    /**
+     * Constant representing "greater than 0"-comparison operator.
+     */
+    public static final int COND_GT = 1;
+    // ?>
+    /**
+     * Constant representing "less than 0"-comparison operator.
+     */
+    public static final int COND_LT = 2;
+    // ?<
+    /**
+     * Constant representing "greater than or equal to 0"-comparison
+     * operator.
+     */
+    public static final int COND_GTEQ = 3;
+    // ?>=
+    /**
+     * Constant representing "less than or equal to 0"-comparison operator.
+     */
+    public static final int COND_LTEQ = 4;
+    // ?<=
+    /**
+     * Constant representing "equal to 0"-comparison operator.
+     */
+    public static final int COND_EQ = 5;
+    // ?=
+    /**
+     * Constant representing "not equal to 0"-comparison operator.
+     */
+    public static final int COND_NEQ = 6;
+
     private static final long serialVersionUID = -4829698528440668056L;
-    private ConditionalOperation cond;
-    private MigolStatement statement;
+    private final MigolStatement statement;
+    private final int condtype;
+    private final MigolValue value;
     /**
      * Constructs a new conditional statement.
      * @param statement     The statement to be executed if the
      * conditional operation evaluates to true.
      * @param cond          The conditional operation.
      */
-    public ConditionalStatement(MigolStatement statement, ConditionalOperation cond ) {       
-        this.cond = cond;
+    public ConditionalStatement(MigolStatement statement, int condtype, MigolValue value) {
+        this.condtype = condtype;
+        this.value = value;
         this.statement = statement;
     }
 
@@ -69,20 +102,49 @@ public class ConditionalStatement implements MigolStatement {
      * occurs during execution.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
-        boolean condres = cond.evaluate(session);
+        boolean condres = evaluate(session);
         if(condres){
             statement.executeStatement(session);
         } else {
             session.progressPP();
         }
     }
+
+    private boolean evaluate(MigolExecutionSession session) throws MigolExecutionException {
+        int val = value.fetchValue(session);
+        switch (condtype) {
+            case COND_GT:
+                return val > 0;
+            case COND_LT:
+                return val < 0;
+            case COND_GTEQ:
+                return val >= 0;
+            case COND_LTEQ:
+                return val <= 0;
+            case COND_EQ:
+                return val == 0;
+            case COND_NEQ:
+                return val != 0;
+            default:
+                throw new MigolExecutionException("Unknown conditional " +
+                        "operator at statement " + session.getPP(),session.getPP());
+        }
+    }
     /**
      * {@inheritDoc MigolStatement}
      */
     public String toMigolSyntax() {
-        return statement.toMigolSyntax() + cond.toMigolSyntax();
+        throw new UnsupportedOperationException();
     }
-    
+
+    public MigolValue getTarget() {
+        return statement.getTarget();
+    }
+
+    public AssignmentOperation[] getOperations() {
+        return statement.getOperations();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -92,25 +154,28 @@ public class ConditionalStatement implements MigolStatement {
             return false;
         }
         final ConditionalStatement other = (ConditionalStatement) obj;
-        if (this.cond != other.cond && (this.cond == null || !this.cond.equals(other.cond))) {
+        if (this.statement != other.statement && (this.statement == null || !this.statement.equals(other.statement))) {
             return false;
         }
-        if (this.statement != other.statement && (this.statement == null || !this.statement.equals(other.statement))) {
+        if (this.condtype != other.condtype) {
+            return false;
+        }
+        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
             return false;
         }
         return true;
     }
-    
+
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 71 * hash + (this.cond != null ? this.cond.hashCode() : 0);
-        hash = 71 * hash + (this.statement != null ? this.statement.hashCode() : 0);
+        int hash = 7;
+        hash = 43 * hash + (this.statement != null ? this.statement.hashCode() : 0);
+        hash = 43 * hash + this.condtype;
+        hash = 43 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }
-
-
     
     
+
 
 }

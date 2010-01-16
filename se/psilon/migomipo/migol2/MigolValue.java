@@ -31,12 +31,27 @@ import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 /**
  * Represents an accessible value in the Migol environment.
  *
- * The memory in Migol is an array of 32-bit signed integers. There are
- * also some special registers, such as # (program pointer) and
- * &#64; (input buffer).
+ * The memory in Migol is an array of 32-bit signed integers. Integers can be
+ * use to address memory.
  * @author John Eriksson
  */
-public interface MigolValue extends java.io.Serializable {
+public class MigolValue implements java.io.Serializable {
+
+    /**
+     * The number of deferring steps.
+     */
+    private final int defers;
+
+    /*
+     * The integer value.
+     */
+    private final int value;
+
+    public MigolValue(int value, int defers) {
+        this.defers = defers;
+        this.value = value;
+    }
+
     /**
      * Returns the resulting memory value.
      * @param session     The session used for fetching the value.
@@ -46,18 +61,43 @@ public interface MigolValue extends java.io.Serializable {
      * occurs while fetching the value.
      *
      */
-    public int fetchValue(MigolExecutionSession session) throws MigolExecutionException;
-    
+    public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
+        int temp = value;
+        for (int i = 0; i < defers; i++) {
+            temp = session.registerGet(temp);
+            // No recursion! A huge improvement over the older, more crappy
+            // interpreter.
+        }
+        return temp;
+    }
+
     /**
      * Returns the number of deferring steps for the value.
      *
      * @return  The number of deferring steps.
      */
-    public int getDefers();
+    public int getDefers() {
+        return defers;
+    }
+
+    public int getInternalValue() {
+        return value;
+    }
+
     /**
      * Returns a Migol syntax string representation of this value,.
      * @return  A Migol syntax string representation of this value.
      */
-    public String toMigolSyntax();
-
+    public String toMigolSyntax() {
+        String number = Integer.toString(value);
+        StringBuffer buff = new StringBuffer();
+        for (int i = 0; i < defers; i++) {
+            buff.append('[');
+        }
+        buff.append(number);
+        for (int i = 0; i < defers; i++) {
+            buff.append(']');
+        }
+        return buff.toString();
+    }
 }

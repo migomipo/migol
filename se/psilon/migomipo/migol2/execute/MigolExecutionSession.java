@@ -25,12 +25,8 @@
  */
 package se.psilon.migomipo.migol2.execute;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 /**
  * Represents a unique execution session.
@@ -42,6 +38,7 @@ import java.util.Arrays;
  * @author John Eriksson
  */
 public class MigolExecutionSession {
+
     /**
      * Contains the data memory.
      */
@@ -50,27 +47,19 @@ public class MigolExecutionSession {
      * The program pointer.
      */
     private int pp;
-    private MigolIOCallback iocallback;
+    private Map<Integer, MigolSpecialRegister> specialregisters;
 
     public MigolExecutionSession() {
-        this(new StandardIOCallback());
+        this(1024 * 1024);
     }
 
     public MigolExecutionSession(int memsize) {
-        this(memsize, new StandardIOCallback());
-    }
-    
-    public MigolExecutionSession(MigolIOCallback iocallback) {
-        this(1024 * 1024, iocallback);
-    }
-    
-    public MigolExecutionSession(int memsize, MigolIOCallback iocallback){
         pp = 1;
         memory = new int[memsize];
-        this.iocallback = iocallback;
+        specialregisters = new HashMap<Integer, MigolSpecialRegister>();
+
     }
 
-    
     /**
      * Resets the data memory and the program counter.
      * @return  This session object.
@@ -84,11 +73,15 @@ public class MigolExecutionSession {
     /**
      * Returns the data memory array for the session as an array of 32-bit
      * signed integers.
+     *
+     * The array is returned by reference.
+     * All changes to the array will affect this session.
      * @return  The data memory for this session.
      */
     public int[] getMemory() {
         return memory;
     }
+
     /**
      * Returns the current value of the program pointer.
      * @return  The current value of the program pointer.
@@ -96,6 +89,7 @@ public class MigolExecutionSession {
     public int getPP() {
         return pp;
     }
+
     /**
      * Sets the value of the program pointer.
      * @param val   The new value.
@@ -103,19 +97,54 @@ public class MigolExecutionSession {
     public void setPP(int val) {
         pp = val;
     }
+
     /**
      * Moves the program pointer one statement forward.
      */
     public void progressPP() {
         pp++;
     }
+
     /**
-     * Returns the {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object for
-     * this session.
-     * @return  The {@link se.psilon.migomipo.migol2.execute.MigolIOCallback} object.
+     * Performs a memory deferring operation. If the memory address is negative,
+     * a special register operation will be performed.
+     *
+     * @param position  The memory register to be deferred
+     * @return          The resulting value
      */
-    public MigolIOCallback getIOCallback() {
-        return iocallback;
+    public int registerGet(int position) throws MigolExecutionException {
+        if (position == -1) {
+            return pp;
+        } else if (position >= 0) {
+            return memory[position];
+        } else {
+            try {
+                return specialregisters.get(position).read();
+            } catch (NullPointerException ex) {
+                throw new MigolExecutionException("Unmapped register " + position + " read at statement " + pp,pp);
+            }
+        }
+    }
+
+    /**
+     * Writes a value to memory. If the memory address is negative,
+     * a special register operation will be performed.
+     *
+     * @param position  The memory register to be written to
+     * @param value     The value to be written to memory
+     */
+    public void registerPut(int position, int value) throws MigolExecutionException {
+        if (position == -1) {
+            pp = value;
+        } else if (position >= 0) {
+            memory[position] = value;
+        } else {
+            try {
+                specialregisters.get(position).write(value);
+            } catch (NullPointerException ex) {
+                throw new MigolExecutionException("Unmapped register " + position + " written at statement " + pp,pp);
+            }
+        }
     }
 
     @Override
@@ -127,13 +156,10 @@ public class MigolExecutionSession {
             return false;
         }
         final MigolExecutionSession other = (MigolExecutionSession) obj;
-        if (this.memory != other.memory && (this.memory == null || !Arrays.equals(this.memory,other.memory))) {
+        if (!Arrays.equals(this.memory, other.memory)) {
             return false;
         }
         if (this.pp != other.pp) {
-            return false;
-        }
-        if (this.iocallback != other.iocallback && (this.iocallback == null || !this.iocallback.equals(other.iocallback))) {
             return false;
         }
         return true;
@@ -141,10 +167,9 @@ public class MigolExecutionSession {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + (this.memory != null ? this.memory.hashCode() : 0);
-        hash = 89 * hash + this.pp;
-        hash = 89 * hash + (this.iocallback != null ? this.iocallback.hashCode() : 0);
+        int hash = 7;
+        hash = 29 * hash + Arrays.hashCode(this.memory);
+        hash = 29 * hash + this.pp;
         return hash;
     }
 
@@ -157,7 +182,7 @@ public class MigolExecutionSession {
         DataOutputStream dout = new DataOutputStream(out);
         dout.writeInt(pp);
         dout.writeInt(memory.length);
-        for(int i : memory){
+        for (int i : memory) {
             dout.writeInt(i);
         }
 
@@ -175,9 +200,8 @@ public class MigolExecutionSession {
         DataInputStream din = new DataInputStream(in);
         pp = din.readInt();
         memory = new int[din.readInt()];
-        for(int i = 0;i<memory.length;i++){
+        for (int i = 0; i < memory.length; i++) {
             memory[i] = din.readInt();
         }
     }
-
 }
