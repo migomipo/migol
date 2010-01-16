@@ -69,9 +69,14 @@ public class MigolParsedProgram implements Serializable {
      */
     public void executeProgram(MigolExecutionSession session) throws MigolExecutionException {
         while (session.getPP() > 0 && session.getPP() <= size()) {
+            session.setPPLocked(false);
             MigolStatement next = statements[session.getPP() - 1];
             if (next != null) {
                 next.executeStatement(session);
+                if(!session.getPPLocked()){
+                    session.progressPP();
+                }
+                
             } else {
                 throw new MigolExecutionException("Null statement found",session.getPP());
             }
@@ -93,6 +98,7 @@ public class MigolParsedProgram implements Serializable {
         MigolStatement next = statements[currentpp - 1];
         if (next != null) {
             next.executeStatement(session);
+            session.setPPLocked(false);
         } else {
             throw new MigolExecutionException("Null statement found",currentpp);
         }
@@ -110,6 +116,10 @@ public class MigolParsedProgram implements Serializable {
 
     public MigolStatement[] getStatements(){
         return Arrays.copyOf(statements, statements.length);
+    }
+
+    public MigolStatement getStatement(int pos){
+        return statements[pos];
     }
     
     @Override

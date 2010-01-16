@@ -1,17 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package se.psilon.migomipo.migol2.execute;
 
 /**
  *
- * @author MigoMipo Software Design
+ * @author John Eriksson
  */
 public interface MigolSpecialRegister {
 
-    public int read() throws MigolExecutionException;
-    public void write(int val) throws MigolExecutionException;
+    public int read(MigolExecutionSession session) throws MigolExecutionException;
+    public void write(MigolExecutionSession session, int val) throws MigolExecutionException;
 
 }

@@ -105,9 +105,7 @@ public class ConditionalStatement implements MigolStatement {
         boolean condres = evaluate(session);
         if(condres){
             statement.executeStatement(session);
-        } else {
-            session.progressPP();
-        }
+        } 
     }
 
     private boolean evaluate(MigolExecutionSession session) throws MigolExecutionException {

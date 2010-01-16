@@ -54,7 +54,6 @@ public class NopStatement implements MigolStatement {
      *
      */
     public void executeStatement(MigolExecutionSession session){
-        session.progressPP();
     }
     /**
      * {@inheritDoc MigolStatement}

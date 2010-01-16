@@ -97,17 +97,10 @@ public class AssignmentStatement implements MigolStatement {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
      */
-    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
-        boolean hasbranched = false;
+    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {       
         for(AssignmentOperation op : operations){
             int targetaddress = target.fetchValue(session);
-            if(targetaddress == -1){
-                hasbranched = true;
-            }
             op.operation(session, targetaddress);
-        }
-        if(!hasbranched){
-            session.progressPP();
         }
     }
 

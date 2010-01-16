@@ -27,6 +27,7 @@ package se.psilon.migomipo.migol2.execute;
 
 import java.io.*;
 import java.util.*;
+import se.psilon.migomipo.migol2.*;
 
 /**
  * Represents a unique execution session.
@@ -48,6 +49,7 @@ public class MigolExecutionSession {
      */
     private int pp;
     private Map<Integer, MigolSpecialRegister> specialregisters;
+    private boolean pplocked;
 
     public MigolExecutionSession() {
         this(1024 * 1024);
@@ -57,7 +59,15 @@ public class MigolExecutionSession {
         pp = 1;
         memory = new int[memsize];
         specialregisters = new HashMap<Integer, MigolSpecialRegister>();
+        addSpecialRegister(-1, new BranchSpecialRegister(this));
+    }
 
+    public boolean getPPLocked() {
+        return pplocked;
+    }
+
+    public void setPPLocked(boolean bool) {
+        pplocked = bool;
     }
 
     /**
@@ -105,6 +115,35 @@ public class MigolExecutionSession {
         pp++;
     }
 
+    public void addSpecialRegister(int position, MigolSpecialRegister register) {
+        if (position >= 0) {
+            throw new IllegalArgumentException("Special register addresses must be negative");
+        }
+        specialregisters.put(position, register);
+    }
+
+    public void clearSpecialRegister(int position) {
+        if (position >= 0) {
+            throw new IllegalArgumentException("Special register addresses must be negative");
+        }
+        specialregisters.remove(position);
+    }
+
+    public MigolSpecialRegister getSpecialRegister(int position) {
+        if (position >= 0) {
+            throw new IllegalArgumentException("Special register addresses must be negative");
+        }
+        return specialregisters.get(position);
+    }
+
+    public void executeProgram(MigolParsedProgram program) throws MigolExecutionException{
+        program.executeProgram(this);
+    }
+
+    public void executeStep(MigolParsedProgram program) throws MigolExecutionException {
+        program.executeStep(this);
+    }
+
     /**
      * Performs a memory deferring operation. If the memory address is negative,
      * a special register operation will be performed.
@@ -113,15 +152,13 @@ public class MigolExecutionSession {
      * @return          The resulting value
      */
     public int registerGet(int position) throws MigolExecutionException {
-        if (position == -1) {
-            return pp;
-        } else if (position >= 0) {
+        if (position >= 0) {
             return memory[position];
         } else {
             try {
-                return specialregisters.get(position).read();
+                return specialregisters.get(position).read(this);
             } catch (NullPointerException ex) {
-                throw new MigolExecutionException("Unmapped register " + position + " read at statement " + pp,pp);
+                throw new MigolExecutionException("Unmapped register " + position + " read at statement " + pp, pp);
             }
         }
     }
@@ -134,15 +171,13 @@ public class MigolExecutionSession {
      * @param value     The value to be written to memory
      */
     public void registerPut(int position, int value) throws MigolExecutionException {
-        if (position == -1) {
-            pp = value;
-        } else if (position >= 0) {
+        if (position >= 0) {
             memory[position] = value;
         } else {
             try {
-                specialregisters.get(position).write(value);
+                specialregisters.get(position).write(this, value);
             } catch (NullPointerException ex) {
-                throw new MigolExecutionException("Unmapped register " + position + " written at statement " + pp,pp);
+                throw new MigolExecutionException("Unmapped register " + position + " written at statement " + pp, pp);
             }
         }
     }
