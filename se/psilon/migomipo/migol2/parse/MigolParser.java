@@ -442,9 +442,6 @@ public class MigolParser {
                         "operator at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos - 1);
             // The pointer points to the character after the incorrect character
             }
-        } else if (c == '@') {
-            strpos++;
-            return InputAssignmentOperation.getInstance();
         } else {
             return new StandardBinaryOperation(OP_ASSIGN, parseValue());
         }
