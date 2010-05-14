@@ -26,7 +26,9 @@
 package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import se.psilon.migomipo.migol2.execute.*;
 
 /**
@@ -47,62 +49,17 @@ public class MigolParsedProgram implements Serializable {
     /**
      * The rendered {@link MigolStatement} objects to be executed.
      */
-    private final MigolStatement[] statements;
+    private final List<MigolStatement> statements;
 
     /**
      * Returns the number of statements in the program.
      * @return The number of statements in the program as an integer.
      */
     public int size() {
-        return statements.length;
+        return statements.size();
     }
 
-    /**
-     * Executes the program with the given session.
-     *
-     * The session will not be reset. If an old session object is used, the old
-     * memory content will still be preserved when execution starts.
-     * @param session   The session which will be manipulated in this program
-     * execution.
-     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
-     * If an error occurs during execution.
-     */
-    public void executeProgram(MigolExecutionSession session) throws MigolExecutionException {
-        while (session.getPP() > 0 && session.getPP() <= size()) {
-            session.setPPLocked(false);
-            MigolStatement next = statements[session.getPP() - 1];
-            if (next != null) {
-                next.executeStatement(session);
-                if(!session.getPPLocked()){
-                    session.progressPP();
-                }
-                
-            } else {
-                throw new MigolExecutionException("Null statement found",session.getPP());
-            }
-        }
-    }
-    /**
-     * Executes a single step of this program on the given session.
-     * The step to be executed is determined by the value of the program
-     * pointer of the {@link MigolExecutionSession} object.
-     * @param session   The session which will be manipulated in this program
-     * execution.
-     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
-     */
-    public void executeStep(MigolExecutionSession session) throws MigolExecutionException {
-        int currentpp = session.getPP();
-        if (currentpp <= 0 || currentpp > size()) {
-            return;
-        }
-        MigolStatement next = statements[currentpp - 1];
-        if (next != null) {
-            next.executeStatement(session);
-            session.setPPLocked(false);
-        } else {
-            throw new MigolExecutionException("Null statement found",currentpp);
-        }
-    }
+    
 
     /**
      * Creates a new MigolParsedProgram object containing the statements
@@ -111,37 +68,28 @@ public class MigolParsedProgram implements Serializable {
      * @see MigolStatement
      */
     public MigolParsedProgram(MigolStatement[] statements) {
-        this.statements = statements;
+        this.statements = Arrays.asList(statements);
     }
 
-    public MigolStatement[] getStatements(){
-        return Arrays.copyOf(statements, statements.length);
+    public MigolParsedProgram(List<MigolStatement> statements){
+        this.statements = new ArrayList<MigolStatement>(statements);
+    }
+
+    public List<MigolStatement> getStatements(){
+        return java.util.Collections.unmodifiableList(statements);
     }
 
     public MigolStatement getStatement(int pos){
-        return statements[pos];
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final MigolParsedProgram other = (MigolParsedProgram) obj;
-        if (this.statements != other.statements && (this.statements == null || !Arrays.equals(this.statements, other.statements))) {
-            return false;
-        }
-        return true;
+        return statements.get(pos - 1);
     }
 
-    
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + (this.statements != null ? this.statements.hashCode() : 0);
-        return hash;
+    public void executeProgram(MigolExecutionSession session) throws MigolExecutionException {
+        session.executeProgram(this);
     }
+
+    public void executeStep(MigolExecutionSession session) throws MigolExecutionException {
+        session.executeStep(this);
+    }
+    
+    
 }

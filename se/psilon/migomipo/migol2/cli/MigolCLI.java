@@ -104,8 +104,8 @@ public class MigolCLI {
         try {
             MigolParsedProgram prog = MigolParser.parse(read);
             MigolExecutionSession session = new MigolExecutionSession();
-            prog.executeProgram(session);
-
+            
+            session.executeProgram(prog);
         } catch (IOException ex) {
             System.err.println("I/O error: " + ex.getMessage());
             System.exit(1);

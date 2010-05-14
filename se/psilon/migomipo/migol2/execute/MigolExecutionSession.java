@@ -60,6 +60,10 @@ public class MigolExecutionSession {
         memory = new int[memsize];
         specialregisters = new HashMap<Integer, MigolSpecialRegister>();
         addSpecialRegister(-1, new BranchSpecialRegister(this));
+        addSpecialRegister(-2, new ConsoleOutputRegister(1));
+        addSpecialRegister(-3, new ConsoleOutputRegister(2));
+        addSpecialRegister(-4, new ConsoleInputRegister());
+        
     }
 
     public boolean getPPLocked() {
@@ -136,12 +140,52 @@ public class MigolExecutionSession {
         return specialregisters.get(position);
     }
 
-    public void executeProgram(MigolParsedProgram program) throws MigolExecutionException{
-        program.executeProgram(this);
+    /**
+     * Executes the program with the given session.
+     *
+     * The session will not be reset. If an old session object is used, the old
+     * memory content will still be preserved when execution starts.
+     * @param session   The session which will be manipulated in this program
+     * execution.
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
+     * If an error occurs during execution.
+     */
+    public void executeProgram(MigolParsedProgram program) throws MigolExecutionException {
+        while (pp > 0 && pp <= program.size()) {
+            setPPLocked(false);
+            MigolStatement next = program.getStatement(pp);
+            if (next != null) {
+                next.executeStatement(this);
+                if (!getPPLocked()) {
+                    progressPP();
+                }
+            } else {
+                throw new NullPointerException("Null MigolStatement found");
+            }
+        }
     }
 
+    /**
+     * Executes a single step of this program on the given session.
+     * The step to be executed is determined by the value of the program
+     * pointer of the {@link MigolExecutionSession} object.
+     * @param session   The session which will be manipulated in this program
+     * execution.
+     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
+     */
     public void executeStep(MigolParsedProgram program) throws MigolExecutionException {
-        program.executeStep(this);
+        if(pp > 0 && pp <= program.size()){
+            setPPLocked(false);
+            MigolStatement next = program.getStatement(pp);
+            if (next != null) {
+                next.executeStatement(this);
+                if (!getPPLocked()) {
+                    progressPP();
+                }
+            } else {
+                throw new NullPointerException("Null MigolStatement found");
+            }
+        }
     }
 
     /**
