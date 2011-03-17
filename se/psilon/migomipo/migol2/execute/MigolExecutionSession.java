@@ -63,7 +63,7 @@ public class MigolExecutionSession {
         addSpecialRegister(-2, new ConsoleOutputRegister(1));
         addSpecialRegister(-3, new ConsoleOutputRegister(2));
         addSpecialRegister(-4, new ConsoleInputRegister());
-        
+
     }
 
     public boolean getPPLocked() {

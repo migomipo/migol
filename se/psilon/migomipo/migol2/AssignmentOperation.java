@@ -57,7 +57,7 @@ public class AssignmentOperation implements Serializable {
     /**
      * Constant representing a multiplication operation.
      */
-    public static final int OP_TIMES = 4;
+    public static final int OP_MUL = 4;
     // <$*
     /**
      * Constant representing a division operation.
@@ -140,7 +140,7 @@ public class AssignmentOperation implements Serializable {
                 case OP_MINUS:
                     result = currentvalue - cal;
                     break;
-                case OP_TIMES:
+                case OP_MUL:
                     result = currentvalue * cal;
                     break;
                 case OP_DIVIDE:
@@ -203,7 +203,7 @@ public class AssignmentOperation implements Serializable {
                 return "<$+" + value.toMigolSyntax();
             case OP_MINUS:
                 return "<$-" + value.toMigolSyntax();
-            case OP_TIMES:
+            case OP_MUL:
                 return "<$*" + value.toMigolSyntax();
             case OP_DIVIDE:
                 return "<$/" + value.toMigolSyntax();
