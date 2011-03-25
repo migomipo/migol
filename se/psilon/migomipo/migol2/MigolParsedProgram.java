@@ -86,10 +86,5 @@ public class MigolParsedProgram implements Serializable {
     public void executeProgram(MigolExecutionSession session) throws MigolExecutionException {
         session.executeProgram(this);
     }
-
-    public void executeStep(MigolExecutionSession session) throws MigolExecutionException {
-        session.executeStep(this);
-    }
-    
-    
+        
 }

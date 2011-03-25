@@ -43,9 +43,9 @@ public class NopStatement implements MigolStatement {
      * no data, it is recommended to use this instance instead of creating
      * NopStatement objects.
      */
-    public static final NopStatement __INSTANCE__;
-    static {
-        __INSTANCE__ = new NopStatement();
+       
+    public NopStatement(){
+    
     }
     /**
      * Does nothing, besides increasing the program pointer by 1.
@@ -58,17 +58,9 @@ public class NopStatement implements MigolStatement {
     /**
      * {@inheritDoc MigolStatement}
      */
-    public String toMigolSyntax() {
-       return "_";
-    }
+    
+    
 
-    public MigolValue getTarget() {
-        return null;
-    }
-
-    public AssignmentOperation[] getOperations() {
-        return new AssignmentOperation[0];
-    }
 
 
 }

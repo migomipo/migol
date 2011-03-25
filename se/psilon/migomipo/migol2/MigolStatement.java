@@ -42,15 +42,5 @@ public interface MigolStatement extends Serializable{
      * if an error occurs during execution.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException;
-    /**
-     * Returns a Migol string representation of this statement.
-     *
-     * This method can be used to convert parsed statement back to a Migol text
-     * program.
-     * @return  A Migol syntax string of this statement.
-     */
-    public String toMigolSyntax();
 
-    public MigolValue getTarget();
-    public AssignmentOperation[] getOperations();
 }

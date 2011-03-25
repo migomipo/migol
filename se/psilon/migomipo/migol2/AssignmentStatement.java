@@ -98,32 +98,12 @@ public class AssignmentStatement implements MigolStatement {
      * occurs during the operation.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {       
-        for(AssignmentOperation op : operations){
-            int targetaddress = target.fetchValue(session);
+        int targetaddress = target.fetchValue(session);
+        for(AssignmentOperation op : operations){           
             op.operation(session, targetaddress);
         }
     }
 
-    /**
-     *
-     * {@inheritDoc MigolStatement}
-     */
-    public String toMigolSyntax() {
-        StringBuffer buff = new StringBuffer();
-        buff.append(target.toMigolSyntax());
-        for (AssignmentOperation op : operations) {
-            buff.append(op.toMigolSyntax());
-        }
-        return buff.toString();
-    }
-
-    public MigolValue getTarget() {
-        return target;
-    }
-
-    public AssignmentOperation[] getOperations() {
-        return Arrays.copyOf(operations, operations.length);
-    }
 
     @Override
     public boolean equals(Object obj) {

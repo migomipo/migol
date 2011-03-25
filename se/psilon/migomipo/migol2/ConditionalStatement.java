@@ -128,20 +128,7 @@ public class ConditionalStatement implements MigolStatement {
                         "operator at statement " + session.getPP(),session.getPP());
         }
     }
-    /**
-     * {@inheritDoc MigolStatement}
-     */
-    public String toMigolSyntax() {
-        throw new UnsupportedOperationException();
-    }
 
-    public MigolValue getTarget() {
-        return statement.getTarget();
-    }
-
-    public AssignmentOperation[] getOperations() {
-        return statement.getOperations();
-    }
 
     @Override
     public boolean equals(Object obj) {

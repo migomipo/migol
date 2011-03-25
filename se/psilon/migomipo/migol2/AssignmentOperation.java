@@ -108,6 +108,16 @@ public class AssignmentOperation implements Serializable {
      * Constant representing a right rotation operation.
      */
     public static final int OP_RRO = 14;
+    
+    
+    
+    public static final int OP_EQ = 15;
+    public static final int OP_NEQ = 16;
+    public static final int OP_LT = 17;
+    public static final int OP_GT = 18;
+    public static final int OP_LTEQ = 19;
+    public static final int OP_GTEQ = 20;
+    
     private final int operation;
     private final MigolValue value;
 
@@ -173,6 +183,25 @@ public class AssignmentOperation implements Serializable {
                 case OP_RRO:
                     result = rotr(currentvalue, cal);
                     break;
+                case OP_EQ:
+                    result = (currentvalue == cal) ? 1 : 0;
+                    break;
+                case OP_NEQ:
+                    result = (currentvalue != cal) ? 1 : 0;
+                    break;
+                case OP_LT:
+                    result = (currentvalue < cal) ? 1 : 0;
+                    break;
+                case OP_GT:
+                    result = (currentvalue > cal) ? 1 : 0;
+                    break;
+                case OP_LTEQ:
+                    result = (currentvalue <= cal) ? 1 : 0;
+                    break;
+                case OP_GTEQ:
+                    result = (currentvalue >= cal) ? 1 : 0;
+                    break;
+                    
                 default:
                     throw new MigolExecutionException("Unknown operator at statement " + session.getPP(), session.getPP());
             }
@@ -190,43 +219,4 @@ public class AssignmentOperation implements Serializable {
         return (value >>> shift) | (value << (32 - shift));
     }
 
-    /**
-     * Returns a Migol syntax string representation of this assignment
-     * operation.
-     * @return  The conditional operation as a Migol syntactic string.
-     */
-    public String toMigolSyntax() {
-        switch (operation) {
-            case OP_ASSIGN:
-                return "<" + value.toMigolSyntax();
-            case OP_PLUS:
-                return "<$+" + value.toMigolSyntax();
-            case OP_MINUS:
-                return "<$-" + value.toMigolSyntax();
-            case OP_MUL:
-                return "<$*" + value.toMigolSyntax();
-            case OP_DIVIDE:
-                return "<$/" + value.toMigolSyntax();
-            case OP_MOD:
-                return "<$%" + value.toMigolSyntax();
-            case OP_AND:
-                return "<$&" + value.toMigolSyntax();
-            case OP_OR:
-                return "<$|" + value.toMigolSyntax();
-            case OP_XOR:
-                return "<$^" + value.toMigolSyntax();
-            case OP_LSH:
-                return "<$<<" + value.toMigolSyntax();
-            case OP_RSHA:
-                return "<$>>" + value.toMigolSyntax();
-            case OP_RSHL:
-                return "<$>>>" + value.toMigolSyntax();
-            case OP_LRO:
-                return "<$<<_" + value.toMigolSyntax();
-            case OP_RRO:
-                return "<$>>_" + value.toMigolSyntax();
-            default:
-                throw new IllegalStateException();
-        }
-    }
 }

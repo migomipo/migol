@@ -88,16 +88,4 @@ public class MigolValue implements java.io.Serializable {
      * Returns a Migol syntax string representation of this value,.
      * @return  A Migol syntax string representation of this value.
      */
-    public String toMigolSyntax() {
-        String number = Integer.toString(value);
-        StringBuffer buff = new StringBuffer();
-        for (int i = 0; i < defers; i++) {
-            buff.append('[');
-        }
-        buff.append(number);
-        for (int i = 0; i < defers; i++) {
-            buff.append(']');
-        }
-        return buff.toString();
-    }
 }
