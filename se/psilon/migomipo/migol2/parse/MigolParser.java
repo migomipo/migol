@@ -190,10 +190,8 @@ public class MigolParser {
         } //...then process the rest of the lines.
         while ((line = code.readLine()) != null) {
             parseLine(line);
-        }
-        MigolStatement[] resultstatements = statements.toArray(
-                new MigolStatement[0]); // Convert statement list to array.
-        return new MigolParsedProgram(resultstatements);
+        }       
+        return new MigolParsedProgram(statements);
 
     }
 
@@ -243,7 +241,7 @@ public class MigolParser {
         try {
             if (c == '_') {
                 nextChar();
-                return NopStatement.__INSTANCE__;
+                return new NopStatement();
             }
             MigolValue val = parseValue();
             if (c == '<') {
@@ -266,9 +264,9 @@ public class MigolParser {
                 nextChar();
                 if (c == '-') {
                     nextChar();
-                    return new AssignmentStatement(new MigolValue(-2, 0), new AssignmentOperation[]{new AssignmentOperation(OP_ASSIGN, val)});
+                    return new ConsoleIOStatement(val, 1);
                 } else {
-                    return new AssignmentStatement(new MigolValue(-3, 0), new AssignmentOperation[]{new AssignmentOperation(OP_ASSIGN, val)});
+                    return new ConsoleIOStatement(val, 0);
                 }
             } else {
                 throw new MigolParsingException("Incorrect statement at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
@@ -299,9 +297,9 @@ public class MigolParser {
             if (c == '#') {
                 nextChar();
                 mval = new MigolValue(-1, defers);
-            } else if (c == '@') {
+            }  else if (c == '@') {
                 nextChar();
-                mval = new MigolValue(-4, defers);
+                mval = new MigolValue(-5, defers);
             } else if (c == '\'') {
                 nextChar();
                 int val = (int) c;
@@ -358,8 +356,9 @@ public class MigolParser {
                 return new AssignmentOperation(OP_OR, parseValue());
             } else if (opc == '!') {
                 return new AssignmentOperation(OP_XOR, new MigolValue(-1, 0));
+            } else if(opc == '='){
+                return new AssignmentOperation(OP_EQ, parseValue());
             } else if (opc == '<') {
-
                 if (c == '<') {
                     nextChar();
                     if (c == '_') {
@@ -368,8 +367,16 @@ public class MigolParser {
                     } else {
                         return new AssignmentOperation(OP_LSH, parseValue());
                     }
+                } else if(c == '='){
+                    nextChar();
+                    return new AssignmentOperation(OP_LTEQ, parseValue());
+                } else if(c == '>'){
+                    nextChar();
+                    return new AssignmentOperation(OP_NEQ, parseValue());
+                } else {
+                    return new AssignmentOperation(OP_LT, parseValue());
                 }
-            } else if (c == '>') {
+            } else if (opc == '>') {
                 if (c == '>') {
                     nextChar();
                     if (c == '>') {
@@ -381,6 +388,11 @@ public class MigolParser {
                     } else {
                         return new AssignmentOperation(OP_RSHA, parseValue());
                     }
+                } else if(c == '='){
+                    nextChar();
+                    return new AssignmentOperation(OP_GTEQ, parseValue());
+                } else {
+                    return new AssignmentOperation(OP_GT, parseValue());
                 }
             }
         } else {

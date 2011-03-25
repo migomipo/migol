@@ -41,7 +41,7 @@ import java.io.*;
  */
 public class MigolCLI {
 
-    private static final String VERSION = "2.3.1";
+    private static final String VERSION = "2.3.2";
     private static final String VERSIONINFO =
             "MigoMipo Migol 09 interpreter version " + VERSION + "\n" +
             "\u00A9 2009 John Eriksson";

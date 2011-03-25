@@ -108,23 +108,7 @@ public class AssignmentStatement implements MigolStatement {
      *
      * {@inheritDoc MigolStatement}
      */
-    public String toMigolSyntax() {
-        StringBuffer buff = new StringBuffer();
-        buff.append(target.toMigolSyntax());
-        for (AssignmentOperation op : operations) {
-            buff.append(op.toMigolSyntax());
-        }
-        return buff.toString();
-    }
-
-    public MigolValue getTarget() {
-        return target;
-    }
-
-    public AssignmentOperation[] getOperations() {
-        return Arrays.copyOf(operations, operations.length);
-    }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

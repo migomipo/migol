@@ -15,7 +15,7 @@ import se.psilon.migomipo.migol2.parse.MigolParser;
 public class MigolTest {
     public static void main(String[] args) throws Throwable{
         MigolParser.parseString(
-                "5<3,[5]>-, [#]>-, '7>-"
+                "5<5, 5<$=5,[5]>-"
                 ).executeProgram(new MigolExecutionSession());
 
     }

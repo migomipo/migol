@@ -48,7 +48,7 @@ public class MigolExecutionSession {
      * The program pointer.
      */
     private int pp;
-    private Map<Integer, MigolSpecialRegister> specialregisters;
+    private MigolSpecialRegister[] specialregisters;
     private boolean pplocked;
 
     public MigolExecutionSession() {
@@ -58,11 +58,10 @@ public class MigolExecutionSession {
     public MigolExecutionSession(int memsize) {
         pp = 1;
         memory = new int[memsize];
-        specialregisters = new HashMap<Integer, MigolSpecialRegister>();
-        addSpecialRegister(-1, new BranchSpecialRegister(this));
-        addSpecialRegister(-2, new ConsoleOutputRegister(1));
-        addSpecialRegister(-3, new ConsoleOutputRegister(2));
-        addSpecialRegister(-4, new ConsoleInputRegister());
+        specialregisters = new MigolSpecialRegister[5];
+        specialregisters[0] = new BranchSpecialRegister();
+        specialregisters[4] = new ConsoleInputRegister();
+
 
     }
 
@@ -119,26 +118,7 @@ public class MigolExecutionSession {
         pp++;
     }
 
-    public void addSpecialRegister(int position, MigolSpecialRegister register) {
-        if (position >= 0) {
-            throw new IllegalArgumentException("Special register addresses must be negative");
-        }
-        specialregisters.put(position, register);
-    }
-
-    public void clearSpecialRegister(int position) {
-        if (position >= 0) {
-            throw new IllegalArgumentException("Special register addresses must be negative");
-        }
-        specialregisters.remove(position);
-    }
-
-    public MigolSpecialRegister getSpecialRegister(int position) {
-        if (position >= 0) {
-            throw new IllegalArgumentException("Special register addresses must be negative");
-        }
-        return specialregisters.get(position);
-    }
+   
 
     /**
      * Executes the program with the given session.
@@ -200,7 +180,8 @@ public class MigolExecutionSession {
             return memory[position];
         } else {
             try {
-                return specialregisters.get(position).read(this);
+                int p = (-1) - position;
+                return specialregisters[p].read(this);
             } catch (NullPointerException ex) {
                 throw new MigolExecutionException("Unmapped register " + position + " read at statement " + pp, pp);
             }
@@ -219,7 +200,8 @@ public class MigolExecutionSession {
             memory[position] = value;
         } else {
             try {
-                specialregisters.get(position).write(this, value);
+                int p = (-1) - position;
+                specialregisters[p].write(this, value);
             } catch (NullPointerException ex) {
                 throw new MigolExecutionException("Unmapped register " + position + " written at statement " + pp, pp);
             }

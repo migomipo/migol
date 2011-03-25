@@ -49,8 +49,5 @@ public interface MigolStatement extends Serializable{
      * program.
      * @return  A Migol syntax string of this statement.
      */
-    public String toMigolSyntax();
-
-    public MigolValue getTarget();
-    public AssignmentOperation[] getOperations();
+  
 }
