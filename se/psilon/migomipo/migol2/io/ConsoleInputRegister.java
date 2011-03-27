@@ -1,9 +1,12 @@
 
-package se.psilon.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2.io;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolSpecialRegister;
 
 public class ConsoleInputRegister implements MigolSpecialRegister {
     Reader in;

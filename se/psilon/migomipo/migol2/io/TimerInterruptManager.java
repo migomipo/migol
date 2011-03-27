@@ -1,47 +1,38 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package se.psilon.migomipo.migol2.execute;
+
+package se.psilon.migomipo.migol2.io;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.execute.MigolSpecialRegister;
 
-/**
- *
- * @author joheri01
- */
-class TimerInterruptManager {
+public class TimerInterruptManager {
 
     private int handlerAddress;
     private int time;
     private Timer timer;
-    private MigolSpecialRegister handlerRegister, configRegister;
-
+    
     public TimerInterruptManager() {
         handlerAddress = 0;
         time = 0;
         timer = null;
-        handlerRegister = new TimerInterruptHandlerRegister();
-        configRegister = new TimerInterruptConfigRegister();
-    }
 
-    public MigolSpecialRegister getHandlerAddressRegister() {
-        return handlerRegister;
-    }
-
-    public MigolSpecialRegister getTimerConfigRegister() {
-        return configRegister;
     }
 
     private class TimerInterrupt implements MigolInterrupt {
 
-        public void execute(MigolExecutionSession session) {
+        public void enter(MigolExecutionSession session) {
             session.doInterrupt(TimerInterruptManager.this.handlerAddress);
         }
+
+        public void exit(MigolExecutionSession session) {
+            // NOTHING
+        }
+        
     }
 
-    private class TimerInterruptHandlerRegister implements MigolSpecialRegister {
+    public class TimerInterruptHandlerRegister implements MigolSpecialRegister {
 
         public TimerInterruptHandlerRegister() {
         }
@@ -55,7 +46,7 @@ class TimerInterruptManager {
         }
     }
 
-    private class TimerInterruptConfigRegister implements MigolSpecialRegister {
+    public class TimerInterruptConfigRegister implements MigolSpecialRegister {
 
         public TimerInterruptConfigRegister() {
         }

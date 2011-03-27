@@ -55,8 +55,12 @@ public class MigolParser {
     }
 
     public static MigolParsedProgram parseString(String str)
-            throws IOException, MigolParsingException {
-        return new MigolParser(new StringReader(str)).parseProgram();
+            throws MigolParsingException {
+        try {
+            return new MigolParser(new StringReader(str)).parseProgram();
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex); // StringReader should never throw an exception
+        }
     }
 
     /**
@@ -190,7 +194,8 @@ public class MigolParser {
         } //...then process the rest of the lines.
         while ((line = code.readLine()) != null) {
             parseLine(line);
-        }       
+        }
+        code.close();
         return new MigolParsedProgram(statements);
 
     }
@@ -297,19 +302,19 @@ public class MigolParser {
             if (c == '#') {
                 nextChar();
                 mval = new MigolValue(-1, defers);
-            } else if(c == 'S'){
+            } else if (c == 'S') {
                 nextChar();
                 mval = new MigolValue(-2, defers);
-            } else if(c == 'R'){
+            } else if (c == 'R') {
                 nextChar();
                 mval = new MigolValue(-3, defers);
-            } else if(c == 'I'){
+            } else if (c == 'I') {
                 nextChar();
                 mval = new MigolValue(-4, defers);
             } else if (c == '@') {
                 nextChar();
                 mval = new MigolValue(-5, defers);
-            } else if (c == 'W'){
+            } else if (c == 'W') {
                 nextChar();
                 mval = new MigolValue(-6, defers);
             } else if (c == '\'') {
@@ -325,8 +330,8 @@ public class MigolParser {
                 throw new MigolParsingException("Unknown value type at "
                         + "line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
             }
-
-            if (checkRightBrackets() != defers) {
+            int right = checkRightBrackets();
+            if (right != defers && right != 0) {
                 throw new MigolParsingException("Incorrect value "
                         + "at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
             }
@@ -368,7 +373,7 @@ public class MigolParser {
                 return new AssignmentOperation(OP_OR, parseValue());
             } else if (opc == '!') {
                 return new AssignmentOperation(OP_XOR, new MigolValue(-1, 0));
-            } else if(opc == '='){
+            } else if (opc == '=') {
                 return new AssignmentOperation(OP_EQ, parseValue());
             } else if (opc == '<') {
                 if (c == '<') {
@@ -379,10 +384,10 @@ public class MigolParser {
                     } else {
                         return new AssignmentOperation(OP_LSH, parseValue());
                     }
-                } else if(c == '='){
+                } else if (c == '=') {
                     nextChar();
                     return new AssignmentOperation(OP_LTEQ, parseValue());
-                } else if(c == '>'){
+                } else if (c == '>') {
                     nextChar();
                     return new AssignmentOperation(OP_NEQ, parseValue());
                 } else {
@@ -400,7 +405,7 @@ public class MigolParser {
                     } else {
                         return new AssignmentOperation(OP_RSHA, parseValue());
                     }
-                } else if(c == '='){
+                } else if (c == '=') {
                     nextChar();
                     return new AssignmentOperation(OP_GTEQ, parseValue());
                 } else {
