@@ -28,6 +28,7 @@ package se.psilon.migomipo.migol2;
 import java.io.Serializable;
 import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 import se.psilon.migomipo.migol2.execute.MigolExecutionException;
+import se.psilon.migomipo.migol2.parse.MigolParsingException;
 
 /**
  * This interface represents an executable Migol statement.
@@ -42,5 +43,6 @@ public interface MigolStatement extends Serializable{
      * if an error occurs during execution.
      */
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException;
+
 
 }

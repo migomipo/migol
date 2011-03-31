@@ -12,9 +12,9 @@ import java.io.*;
  * @author John
  */
 public class StreamByteChannel implements java.nio.channels.ByteChannel {
-    InputStream in;
-    OutputStream out;
-    boolean isOpen = true;
+    private InputStream in;
+    private OutputStream out;
+    private boolean isOpen = true;
 
     public StreamByteChannel(InputStream in, OutputStream out) {
         this.in = in;
