@@ -3,6 +3,7 @@ package se.psilon.migomipo.migol2.io;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
+import java.util.Map;
 import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 import se.psilon.migomipo.migol2.execute.MigolSpecialRegister;
@@ -15,7 +16,8 @@ public class IOManager {
     private int bufferAddress = 0;
     private int readLength = 0;
     private ExecutorService threadPool;
-    private ConcurrentHashMap<Integer, ByteChannel> map = new ConcurrentHashMap<Integer, ByteChannel>();
+    private Map<Integer, ByteChannel> map = new ConcurrentHashMap<Integer, ByteChannel>();
+    private IOInterrupt curInterrupt = null;
 
     public IOManager() {
         threadPool = Executors.newCachedThreadPool();
@@ -24,11 +26,19 @@ public class IOManager {
         map.put(3, new StreamByteChannel(null, System.err));
 
     }
-    
-    public void close(){
+
+    public void close() {
         threadPool.shutdown();
     }
-    
+
+    public int getHandlerAddress() {
+        return handlerAddress;
+    }
+
+    void setCurInterrupt(IOInterrupt i) {
+        this.curInterrupt = i;
+    }
+
     // Boilerplate!
     public class HandlerAddressRegister implements MigolSpecialRegister {
 
@@ -63,7 +73,7 @@ public class IOManager {
 
         }
     }
-    
+
     public class BufferLengthRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
@@ -73,7 +83,6 @@ public class IOManager {
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
             readLength = val;
         }
-    
     }
 
     public class ReadRequestRegister implements MigolSpecialRegister {
@@ -85,6 +94,45 @@ public class IOManager {
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+        }
+    }
+
+    public class InterruptHandleRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (curInterrupt == null) ? 0 : curInterrupt.getIOHandle();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+        }
+    }
+
+    public class InterruptBufferAddressRegister implements MigolSpecialRegister {
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (curInterrupt == null) ? 0 : curInterrupt.getBufferAddress();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+        }
+    }
+
+    public class InterruptBufferLengthRegister implements MigolSpecialRegister {
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (curInterrupt == null) ? 0 : curInterrupt.getBytes();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            
+        }
+    }
+
+    public class InterruptTypeRegister implements MigolSpecialRegister {
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (curInterrupt == null) ? 0 : curInterrupt.getType();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            
         }
     }
 
@@ -127,8 +175,9 @@ public class IOManager {
                 int[] mem = session.getMemory();
                 while (buf.hasRemaining()) {
                     mem[i++] = buf.get() & 0xFF;
-                } 
-                session.getInterruptQueue().add(new IOInterrupt(bufferAddress, bytes, socketHandle, 0));
+                }
+                session.getInterruptQueue().add(new IOInterrupt(
+                        IOManager.this, bufferAddress, bytes, socketHandle, 0));
 
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -159,35 +208,11 @@ public class IOManager {
                 }
                 buf.flip();
                 int bytes = channel.write(buf);
-                session.getInterruptQueue().add(new IOInterrupt(bufferAddress, bytes, socketHandle, 1));
+                session.getInterruptQueue().add(new IOInterrupt(
+                        IOManager.this, bufferAddress, bytes, socketHandle, 1));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
     }
-    
-    private class IOInterrupt implements MigolInterrupt {
-        private final int bufferAddress;
-        private final int bytes;
-        private final int socketHandle;
-        private final int type;
-
-        private IOInterrupt(int bufferAddress, int bytes, int socketHandle, int type) {
-            this.bufferAddress = bufferAddress;
-            this.bytes = bytes;
-            this.socketHandle = socketHandle;
-            this.type = type;
-        }
-
-        public void enter(MigolExecutionSession session) {            
-            session.doInterrupt(IOManager.this.handlerAddress);
-        }
-
-        public void exit(MigolExecutionSession session) {
-            
-        }
-    }
-
-    
-    
 }

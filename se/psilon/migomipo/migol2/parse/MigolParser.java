@@ -236,14 +236,34 @@ public class MigolParser {
                 break;
             }
             statementcount++;
-            statements.add(parseStatement());
+            statements.add(parseStatement());           
             skipSpacesAndComments();     
         } while(!endOfLine && c == ',');
         if(!endOfLine){
-            throw new MigolParsingException("Unexpected character at "
-                        + "line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+            
+        }        
+    }
+
+    private void skipSpacesAndComments() throws MigolParsingException {
+        while (!endOfLine) {
+            if (isBlank(c)) {
+                nextChar();
+            } else if (c == '/') {
+                nextChar();
+                if (c == '/') {
+                    // Skip to end of line
+                    strpos = cLine.length();
+                    endOfLine = true;
+                    break;
+                } else { // Single slashes are not allowed
+                    throw new MigolParsingException("Unexpected / at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+                }
+            } else if(c == '\"'){
+                parseConstant();
+            } else {
+                break;
+            }
         }
-        
     }
 
     private MigolStatement parseStatement() throws MigolParsingException {
@@ -283,7 +303,7 @@ public class MigolParser {
                 addConstant(name, statementcount, namestart);
 
             }
-
+            checkFollowingChar();
             return statement;
 
         } catch (StringIndexOutOfBoundsException ex) {
@@ -524,25 +544,7 @@ public class MigolParser {
         return line.startsWith("#!");
     }
 
-    private void skipSpacesAndComments() throws MigolParsingException {
-        while (!endOfLine) {
-            if (isBlank(c)) {
-                nextChar();
-            } else if (c == '/') {
-                nextChar();
-                if (c == '/') {
-                    // Skip to end of line
-                    strpos = cLine.length();
-                    endOfLine = true;
-                    break;
-                } else { // Single slashes are not allowed
-                    throw new MigolParsingException("Unexpected / at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
-                }
-            } else {
-                break;
-            }
-        }
-    }
+    
 
     private void addConstant(String name, int statementcount, int namestrpos) throws MigolParsingException {
         Integer i = constants.put(name, statementcount);
@@ -565,7 +567,15 @@ public class MigolParser {
         }
         nextChar();
         int value = parseIntegerValue();
-        addConstant(name, value, startstrpos);         
-        
+        addConstant(name, value, startstrpos);
+        checkFollowingChar();
+    }
+
+    private void checkFollowingChar() throws MigolParsingException {
+        if(!(endOfLine || isBlank(c) || c == '/' || c == ',')){
+            throw new MigolParsingException(
+                    "Unexpected character at line " + code.getLineNumber(),
+                    cLine, code.getLineNumber(), strpos);
+        }
     }
 }

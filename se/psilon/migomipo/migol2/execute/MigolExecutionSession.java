@@ -93,6 +93,10 @@ public class MigolExecutionSession {
         specialregisters[23] = io.new IOHandleRegister();
         specialregisters[24] = io.new ReadRequestRegister();
         specialregisters[25] = io.new WriteRequestRegister();
+        specialregisters[26] = io.new InterruptHandleRegister();
+        specialregisters[27] = io.new InterruptBufferAddressRegister();
+        specialregisters[28] = io.new InterruptBufferLengthRegister();
+        specialregisters[29] = io.new InterruptTypeRegister();
     }
 
     public void setPPLocked(boolean bool) {
