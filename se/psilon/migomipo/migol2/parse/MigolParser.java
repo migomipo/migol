@@ -256,7 +256,7 @@ public class MigolParser {
                     endOfLine = true;
                     break;
                 } else { // Single slashes are not allowed
-                    throw new MigolParsingException("Unexpected / at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+                    throw new MigolParsingException("Unexpected /", cLine, code.getLineNumber(), strpos);
                 }
             } else if(c == '\"'){
                 parseConstant();
@@ -307,7 +307,7 @@ public class MigolParser {
             return statement;
 
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new MigolParsingException("Unexpected end of line at " + "line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unexpected end of line", cLine, code.getLineNumber(), strpos);
         }
     }
 
@@ -340,7 +340,7 @@ public class MigolParser {
             } else if (isNum(c) || c == '-') {
                 int val = parseIntegerValue();
                 mval = new IntegerValue(val, defers);
-            } else if (c >= 'A' && c <= 'Z') {
+            } else if (c >= 'a' && c <= 'z') {
                 int strposstart = strpos;
                 String name = parseName();
                 ProxyValue proxy = new ProxyValue(
@@ -349,18 +349,17 @@ public class MigolParser {
                 proxies.add(proxy);
                 mval = proxy;
             } else {
-                throw new MigolParsingException("Unknown value type at " + 
-                        "line " + code.getLineNumber(), cLine,
-                        code.getLineNumber(), strpos);
+                throw new MigolParsingException("Unknown value type"
+                        , cLine, code.getLineNumber(), strpos);
             }
             int right = checkRightBrackets();
             if (right != defers && right != 0) {
-                throw new MigolParsingException("Incorrect value " + "at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+                throw new MigolParsingException("Incorrect value", cLine, code.getLineNumber(), strpos);
             }
             return mval;
 
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new MigolParsingException("Unexpected end of line at " + "line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unexpected end of line", cLine, code.getLineNumber(), strpos);
         }
 
     }
@@ -436,7 +435,7 @@ public class MigolParser {
         } else {
             return new AssignmentOperation(OP_ASSIGN, parseValue());
         }
-        throw new MigolParsingException("Unknown assignment " + "operator at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos - 1);
+        throw new MigolParsingException("Unknown assignment operator", cLine, code.getLineNumber(), strpos - 1);
         // The pointer points to the character after the incorrect character
 
     }
@@ -472,7 +471,7 @@ public class MigolParser {
             nextChar();
             return COND_EQ;
         } else {
-            throw new MigolParsingException("Unknown conditional operator" + " at line " + code.getLineNumber(), cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unknown conditional operator", cLine, code.getLineNumber(), strpos);
         }
     }
 
@@ -494,20 +493,18 @@ public class MigolParser {
         try {
             if (strpos <= start) {
                 throw new MigolParsingException(
-                        "Incorrect value at " + "line " + code.getLineNumber(),
-                        cLine, code.getLineNumber(), strpos);
+                        "Incorrect value", cLine, code.getLineNumber(), strpos);
             }
             return Integer.parseInt(cLine.substring(start, strpos), 10);
         } catch (NumberFormatException ex) {
             throw new MigolParsingException(
-                    "Incorrect value at " + "line " + code.getLineNumber(),
-                    cLine, code.getLineNumber(), strpos);
+                        "Incorrect value", cLine, code.getLineNumber(), strpos);
         }
     }
 
     private String parseName() throws MigolParsingException {
         int start = strpos;
-        while (c >= 'A' && c <= 'Z') {
+        while (c >= 'a' && c <= 'z') {
             nextChar();
             if (endOfLine) {
                 break;
@@ -515,8 +512,7 @@ public class MigolParser {
         }
         if (strpos <= start) {
             throw new MigolParsingException(
-                    "Incorrect value at " + "line " + code.getLineNumber(),
-                    cLine, code.getLineNumber(), strpos);
+                    "Incorrect name", cLine, code.getLineNumber(), strpos);
         }
         return cLine.substring(start, strpos);
 
@@ -550,8 +546,8 @@ public class MigolParser {
         Integer i = constants.put(name, statementcount);
         if(i != null){
             throw new MigolParsingException(
-                    "Constant defined multiple times at line " +
-                    code.getLineNumber(), cLine, code.getLineNumber(), namestrpos);
+                    "Constant defined multiple times", cLine, 
+                    code.getLineNumber(), namestrpos);
         }
     }
 
@@ -562,7 +558,7 @@ public class MigolParser {
         String name = parseName();
         if(c != '='){
             throw new MigolParsingException(
-                    "Unexpected character at line " + code.getLineNumber(), 
+                    "Unexpected character", 
                     cLine, code.getLineNumber(), strpos);
         }
         nextChar();
@@ -574,7 +570,7 @@ public class MigolParser {
     private void checkFollowingChar() throws MigolParsingException {
         if(!(endOfLine || isBlank(c) || c == '/' || c == ',')){
             throw new MigolParsingException(
-                    "Unexpected character at line " + code.getLineNumber(),
+                    "Unexpected character",
                     cLine, code.getLineNumber(), strpos);
         }
     }

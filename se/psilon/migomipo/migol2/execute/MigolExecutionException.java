@@ -57,7 +57,7 @@ public class MigolExecutionException extends Exception {
      * @param mess      The detail message.
      */
     public MigolExecutionException(String mess, int statementpos) {
-        super(mess);
+        super(mess + " at statement " + statementpos);
         this.statementpos = statementpos;
 
     }
@@ -73,7 +73,7 @@ public class MigolExecutionException extends Exception {
      *
      */
     public MigolExecutionException(String mess, Throwable cause, int statementpos) {
-        super(mess, cause);
+        super(mess + " at statement " + statementpos, cause);
         this.statementpos = statementpos;
 
     }

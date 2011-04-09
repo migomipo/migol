@@ -203,7 +203,7 @@ public class AssignmentOperation implements Serializable {
                     break;
                     
                 default:
-                    throw new MigolExecutionException("Unknown operator at statement " + session.getPP(), session.getPP());
+                    throw new MigolExecutionException("Unknown assignment operator", session.getPP());
             }
         }
         session.registerPut(address, result);

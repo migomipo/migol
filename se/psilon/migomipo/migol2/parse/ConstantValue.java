@@ -39,8 +39,7 @@ class ConstantValue implements MigolValue {
             Integer i = constants.get(name);
             return new IntegerValue(i.intValue(), defers);
         } catch(NullPointerException ex){
-            throw new MigolParsingException("Undefined constant referenced " +
-                    "in line " + linenum, cLine, linenum, pos);
+            throw new MigolParsingException("Undefined constant", cLine, linenum, pos);
         }
     }
 

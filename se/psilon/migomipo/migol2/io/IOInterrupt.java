@@ -9,14 +9,16 @@ class IOInterrupt implements MigolInterrupt {
     private final int socketHandle;
     private final int type;
     private final IOManager outer;
+    private final int error;
 
-    public IOInterrupt(IOManager outer, int bufferAddress, int bytes, int socketHandle, int type) {
+    public IOInterrupt(IOManager outer, int bufferAddress, int bytes, int socketHandle, int type, int error) {
         super();
         this.outer = outer;
         this.bufferAddress = bufferAddress;
         this.bytes = bytes;
         this.socketHandle = socketHandle;
         this.type = type;
+        this.error = error;
     }
 
     public void enter(MigolExecutionSession session) {
@@ -42,6 +44,10 @@ class IOInterrupt implements MigolInterrupt {
 
     public int getType() {
         return type;
+    }
+
+    public int getError() {
+        return error;
     }
     
     

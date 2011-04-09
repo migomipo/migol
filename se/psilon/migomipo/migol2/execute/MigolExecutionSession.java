@@ -25,9 +25,7 @@
  */
 package se.psilon.migomipo.migol2.execute;
 
-import se.psilon.migomipo.migol2.io.ConsoleInputRegister;
-import se.psilon.migomipo.migol2.io.MigolInterrupt;
-import se.psilon.migomipo.migol2.io.TimerInterruptManager;
+import se.psilon.migomipo.migol2.io.*;
 import java.util.*;
 import se.psilon.migomipo.migol2.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -87,16 +85,19 @@ public class MigolExecutionSession {
     
     private void setupIO() {
         io = new IOManager();
-        specialregisters[20] = io.new HandlerAddressRegister();
-        specialregisters[21] = io.new BufferAddressRegister();
-        specialregisters[22] = io.new BufferLengthRegister();
-        specialregisters[23] = io.new IOHandleRegister();
-        specialregisters[24] = io.new ReadRequestRegister();
-        specialregisters[25] = io.new WriteRequestRegister();
-        specialregisters[26] = io.new InterruptHandleRegister();
-        specialregisters[27] = io.new InterruptBufferAddressRegister();
-        specialregisters[28] = io.new InterruptBufferLengthRegister();
-        specialregisters[29] = io.new InterruptTypeRegister();
+        FileOperationManager file = new FileOperationManager(io); 
+        specialregisters[20] = io.getHandlerAddressRegister();
+        specialregisters[21] = io.getBufferAddressRegister();
+        specialregisters[22] = io.getBufferLengthRegister();
+        specialregisters[23] = io.getIoHandleRegister();
+        specialregisters[24] = io.getReadRequestRegister();
+        specialregisters[25] = io.getWriteRequestRegister();
+        specialregisters[26] = io.getCloseHandleRegister();
+        specialregisters[27] = io.getInterruptHandleRegister();
+        specialregisters[28] = io.getInterruptBufferAddressRegister();
+        specialregisters[29] = io.getInterruptBufferLengthRegister();
+        specialregisters[30] = io.getInterruptTypeRegister();
+        specialregisters[31] = io.getInterruptErrorRegister();
     }
 
     public void setPPLocked(boolean bool) {
@@ -180,7 +181,8 @@ public class MigolExecutionSession {
                     try {
                         i = interrupts.take();
                     } catch (InterruptedException ex) {
-                        throw new MigolExecutionException("Interrupt waiting interrupted by runtime at statement " + pp, ex, pp);
+                        throw new MigolExecutionException(
+                                "Interrupt waiting interrupted by runtime", ex, pp);
                     }
                 } else {
                     i = interrupts.poll();
@@ -209,7 +211,7 @@ public class MigolExecutionSession {
                 int p = (-1) - position;
                 return specialregisters[p].read(this);
             } catch (NullPointerException ex) {
-                throw new MigolExecutionException("Unmapped register " + position + " read at statement " + pp, pp);
+                throw new MigolExecutionException("Unmapped register " + position + " read from", pp);
             }
         }
     }
@@ -229,7 +231,7 @@ public class MigolExecutionSession {
                 int p = (-1) - position;
                 specialregisters[p].write(this, value);
             } catch (NullPointerException ex) {
-                throw new MigolExecutionException("Unmapped register " + position + " written at statement " + pp, pp);
+                throw new MigolExecutionException("Unmapped register " + position + " written to", pp);
             }
         }
     }

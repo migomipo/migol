@@ -46,7 +46,7 @@ public class MigolParsingException extends Exception {
      * found.
      */
     public MigolParsingException(String message,String errorline, int linenumber, int errorpos) {        
-        super(message);
+        super(message + " in line " + linenumber);
         this.errorline = errorline;
         this.linenumber = linenumber;
         this.errorpos = errorpos;

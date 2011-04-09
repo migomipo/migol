@@ -124,8 +124,8 @@ public class ConditionalStatement implements MigolStatement {
             case COND_NEQ:
                 return val != 0;
             default:
-                throw new MigolExecutionException("Unknown conditional " +
-                        "operator at statement " + session.getPP(),session.getPP());
+                throw new MigolExecutionException(
+                        "Unknown conditional operator",session.getPP());
         }
     }
 

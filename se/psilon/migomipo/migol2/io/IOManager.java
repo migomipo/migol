@@ -18,6 +18,18 @@ public class IOManager {
     private ExecutorService threadPool;
     private Map<Integer, ByteChannel> map = new ConcurrentHashMap<Integer, ByteChannel>();
     private IOInterrupt curInterrupt = null;
+    private HandlerAddressRegister handlerAddressRegister = new HandlerAddressRegister();
+    private IOHandleRegister ioHandleRegister = new IOHandleRegister();
+    private BufferAddressRegister bufferAddressRegister = new BufferAddressRegister();
+    private BufferLengthRegister bufferLengthRegister = new BufferLengthRegister();
+    private ReadRequestRegister readRequestRegister = new ReadRequestRegister();
+    private WriteRequestRegister writeRequestRegister = new WriteRequestRegister();
+    private CloseHandleRegister closeHandleRegister = new CloseHandleRegister();
+    private InterruptHandleRegister interruptHandleRegister = new InterruptHandleRegister();
+    private InterruptBufferAddressRegister interruptBufferAddressRegister = new InterruptBufferAddressRegister();
+    private InterruptBufferLengthRegister interruptBufferLengthRegister = new InterruptBufferLengthRegister();
+    private InterruptTypeRegister interruptTypeRegister = new InterruptTypeRegister();
+    private InterruptErrorRegister interruptErrorRegister = new InterruptErrorRegister();
 
     public IOManager() {
         threadPool = Executors.newCachedThreadPool();
@@ -40,7 +52,7 @@ public class IOManager {
     }
 
     // Boilerplate!
-    public class HandlerAddressRegister implements MigolSpecialRegister {
+    private class HandlerAddressRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return handlerAddress;
@@ -51,7 +63,7 @@ public class IOManager {
         }
     }
 
-    public class IOHandleRegister implements MigolSpecialRegister {
+    private class IOHandleRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return socketHandle;
@@ -62,7 +74,7 @@ public class IOManager {
         }
     }
 
-    public class BufferAddressRegister implements MigolSpecialRegister {
+    private class BufferAddressRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return bufferAddress;
@@ -74,7 +86,7 @@ public class IOManager {
         }
     }
 
-    public class BufferLengthRegister implements MigolSpecialRegister {
+    private class BufferLengthRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return readLength;
@@ -85,7 +97,7 @@ public class IOManager {
         }
     }
 
-    public class ReadRequestRegister implements MigolSpecialRegister {
+    private class ReadRequestRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             ByteChannel channel = map.get(socketHandle);
@@ -97,7 +109,7 @@ public class IOManager {
         }
     }
 
-    public class InterruptHandleRegister implements MigolSpecialRegister {
+    private class InterruptHandleRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return (curInterrupt == null) ? 0 : curInterrupt.getIOHandle();
@@ -107,7 +119,8 @@ public class IOManager {
         }
     }
 
-    public class InterruptBufferAddressRegister implements MigolSpecialRegister {
+    private class InterruptBufferAddressRegister implements MigolSpecialRegister {
+
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return (curInterrupt == null) ? 0 : curInterrupt.getBufferAddress();
         }
@@ -116,27 +129,27 @@ public class IOManager {
         }
     }
 
-    public class InterruptBufferLengthRegister implements MigolSpecialRegister {
+    private class InterruptBufferLengthRegister implements MigolSpecialRegister {
+
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return (curInterrupt == null) ? 0 : curInterrupt.getBytes();
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            
         }
     }
 
-    public class InterruptTypeRegister implements MigolSpecialRegister {
+    private class InterruptTypeRegister implements MigolSpecialRegister {
+
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             return (curInterrupt == null) ? 0 : curInterrupt.getType();
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            
         }
     }
 
-    public class WriteRequestRegister implements MigolSpecialRegister {
+    private class WriteRequestRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
             ByteChannel channel = map.get(socketHandle);
@@ -147,6 +160,99 @@ public class IOManager {
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
         }
     }
+
+    private class CloseHandleRegister implements MigolSpecialRegister {
+
+        public CloseHandleRegister() {
+        }
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            final ByteChannel channel = map.get(socketHandle);
+            threadPool.execute(new Runnable() {
+
+                public void run() {
+                    try {
+                        channel.close();
+                    } catch (IOException ex) {
+                    }
+                }
+            });
+            return 1;
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+        }
+    }
+
+    private class InterruptErrorRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (curInterrupt == null) ? 0 : curInterrupt.getError();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+
+        }
+
+    }
+
+    public MigolSpecialRegister getBufferAddressRegister() {
+        return bufferAddressRegister;
+    }
+
+    public MigolSpecialRegister getBufferLengthRegister() {
+        return bufferLengthRegister;
+    }
+
+    public MigolSpecialRegister getHandlerAddressRegister() {
+        return handlerAddressRegister;
+    }
+
+    public MigolSpecialRegister getInterruptBufferAddressRegister() {
+        return interruptBufferAddressRegister;
+    }
+
+    public MigolSpecialRegister getInterruptBufferLengthRegister() {
+        return interruptBufferLengthRegister;
+    }
+
+    public MigolSpecialRegister getInterruptHandleRegister() {
+        return interruptHandleRegister;
+    }
+
+    public MigolSpecialRegister getInterruptTypeRegister() {
+        return interruptTypeRegister;
+    }
+
+    public MigolSpecialRegister getIoHandleRegister() {
+        return ioHandleRegister;
+    }
+
+    public MigolSpecialRegister getReadRequestRegister() {
+        return readRequestRegister;
+    }
+
+    public MigolSpecialRegister getWriteRequestRegister() {
+        return writeRequestRegister;
+    }
+
+    public MigolSpecialRegister getCloseHandleRegister() {
+        return closeHandleRegister;
+    }
+
+    public MigolSpecialRegister getInterruptErrorRegister() {
+        return interruptErrorRegister;
+    }
+   
+    public ByteChannel getChannel(int i){
+        return map.get(i);
+    }
+    
+    public ByteChannel getCurrentChannel(){
+        return getChannel(socketHandle);
+    }
+    
+    
 
     // May be temporary, multithreading and streams aren't the most efficient
     // way to do I/O in Java
@@ -177,10 +283,12 @@ public class IOManager {
                     mem[i++] = buf.get() & 0xFF;
                 }
                 session.getInterruptQueue().add(new IOInterrupt(
-                        IOManager.this, bufferAddress, bytes, socketHandle, 0));
+                        IOManager.this, bufferAddress, bytes, socketHandle, 0,0));
 
             } catch (IOException ex) {
-                ex.printStackTrace();
+                int errornumber = 1;
+                session.getInterruptQueue().add(new IOInterrupt(
+                        IOManager.this, bufferAddress, -1, socketHandle, 0,errornumber));
             }
         }
     }
@@ -209,9 +317,11 @@ public class IOManager {
                 buf.flip();
                 int bytes = channel.write(buf);
                 session.getInterruptQueue().add(new IOInterrupt(
-                        IOManager.this, bufferAddress, bytes, socketHandle, 1));
+                        IOManager.this, bufferAddress, bytes, socketHandle, 1, 0));
             } catch (IOException ex) {
-                ex.printStackTrace();
+                int errornumber = 1;
+                session.getInterruptQueue().add(new IOInterrupt(
+                        IOManager.this, bufferAddress, -1, socketHandle, 1,errornumber));
             }
         }
     }
