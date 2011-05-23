@@ -24,7 +24,8 @@ public class ConsoleIOStatement implements MigolStatement {
     
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
         if(mode == 0){
-            System.out.print((char) val.fetchValue(session));
+            System.out.write(val.fetchValue(session));
+            System.out.flush();
         } else if(mode == 1){
             System.out.print(val.fetchValue(session));
         } else throw new IllegalStateException();

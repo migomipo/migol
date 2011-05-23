@@ -1,4 +1,3 @@
-
 package se.psilon.migomipo.migol2.io;
 
 import java.util.Timer;
@@ -12,7 +11,7 @@ public class TimerInterruptManager {
     private int handlerAddress;
     private int time;
     private Timer timer;
-    
+
     public TimerInterruptManager() {
         handlerAddress = 0;
         time = 0;
@@ -22,14 +21,15 @@ public class TimerInterruptManager {
 
     private class TimerInterrupt implements MigolInterrupt {
 
-        public void enter(MigolExecutionSession session) {
-            session.doInterrupt(TimerInterruptManager.this.handlerAddress);
+        private int interruptTime;
+
+        public TimerInterrupt(int interruptTime) {
+            this.interruptTime = interruptTime;
         }
 
-        public void exit(MigolExecutionSession session) {
-            // NOTHING
+        public int getHandlerAddress(MigolExecutionSession session) {
+            return TimerInterruptManager.this.handlerAddress;
         }
-        
     }
 
     public class TimerInterruptHandlerRegister implements MigolSpecialRegister {
@@ -68,12 +68,38 @@ public class TimerInterruptManager {
 
                     @Override
                     public void run() {
-                        session.getInterruptQueue().add(new TimerInterrupt());
+                        session.getInterruptQueue().add(new TimerInterrupt(
+                                (int) System.currentTimeMillis()));
                     }
                 }, time, time);
 
             }
         }
     }
-}
 
+    public class TimerInterruptTimeRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            MigolInterrupt curInterrupt = session.getCurInterrupt();
+            if (curInterrupt instanceof TimerInterrupt) {
+                return ((TimerInterrupt) curInterrupt).interruptTime;
+            } else {
+                return 0;
+            }
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    public class MilliClockRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return (int) System.currentTimeMillis();
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+        }
+    }
+}
