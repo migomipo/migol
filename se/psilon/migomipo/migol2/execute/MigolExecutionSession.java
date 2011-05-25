@@ -247,6 +247,10 @@ public class MigolExecutionSession {
         return hash;
     }
 
+    public void addIOFunction(int i, MigolIOFunction func) {
+        ioFunctions.put(i, func);
+    }
+
     private static class BranchRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {

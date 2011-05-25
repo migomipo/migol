@@ -328,10 +328,38 @@ public class MigolParser {
             MigolValue mval;
             if (c == '#') {
                 nextChar();
-                mval = new IntegerValue(-1, defers);
+                if(c == '!'){
+                    nextChar();
+                    mval = new IntegerValue(-2, defers);
+                } else {
+                    mval = new IntegerValue(-1, defers);
+                }
+                
             } else if (c == '@') {
                 nextChar();
-                mval = new IntegerValue(-5, defers);
+                mval = new IntegerValue(-8, defers);
+            } else if (c == '!'){
+                nextChar();
+                if(c == '#'){
+                    nextChar();
+                    mval = new IntegerValue(-4, defers);
+                } else {
+                    mval = new IntegerValue(-3, defers);
+                }
+            } else if (c == '*'){
+                nextChar();
+                if(c == '#'){
+                    nextChar();
+                    mval = new IntegerValue(-6, defers);
+                } else if (c == '!'){
+                    nextChar();
+                    mval = new IntegerValue(-5, defers);
+                } else {
+                    throw new MigolParsingException("Unknown value type", cLine, code.getLineNumber(), strpos);
+                }
+            } else if (c == '\\'){
+                nextChar();
+                mval = new IntegerValue(-7, defers);
             } else if (c == '\'') {
                 nextChar();
                 int val = (int) c;
@@ -390,8 +418,6 @@ public class MigolParser {
                 return new AssignmentOperation(OP_AND, parseValue());
             } else if (opc == '|') {
                 return new AssignmentOperation(OP_OR, parseValue());
-            } else if (opc == '!') {
-                return new AssignmentOperation(OP_XOR, new IntegerValue(-1, 0));
             } else if (opc == '=') {
                 return new AssignmentOperation(OP_EQ, parseValue());
             } else if (opc == '<') {
