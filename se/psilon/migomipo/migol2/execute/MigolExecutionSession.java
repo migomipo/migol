@@ -50,14 +50,17 @@ public class MigolExecutionSession {
      * The program pointer.
      */
     private int pp = 1;
-    private int swip = 0;
-    private int ret = 0;
-    private MigolInterrupt curInterrupt = null;
+    private int ret = -1;
+    private int result = -1;
+    private int handler = -1;
+    private boolean isInterruptMode = false;
     private MigolSpecialRegister[] specialregisters;
-    private boolean pplocked;
-    private LinkedBlockingQueue<MigolInterrupt> interrupts = new LinkedBlockingQueue<MigolInterrupt>();
+    private boolean pplocked = false;
+    private LinkedBlockingQueue<Integer> results = new LinkedBlockingQueue<Integer>();
+    private Map<Integer, MigolIOFunction> ioFunctions = new HashMap<Integer, MigolIOFunction>();
     private boolean waitInterrupt = false;
-    private IOManager io;
+    private boolean hasRun = false;
+
 
     public MigolExecutionSession() {
         this(1024 * 1024);
@@ -65,19 +68,16 @@ public class MigolExecutionSession {
 
     public MigolExecutionSession(int memsize) {
         memory = new int[memsize];
-        specialregisters = new MigolSpecialRegister[64];
-        specialregisters[0] = new BranchSpecialRegister();
-        specialregisters[1] = new SoftwareInterruptManagerAddressRegister();
-        specialregisters[2] = new InterruptReturnAddressRegister();
-
-        specialregisters[3] = new InterruptFlagRegister();
-        specialregisters[4] = new ConsoleInputRegister();
-        specialregisters[5] = new InterruptWaitRegister();
-        TimerInterruptManager timer = new TimerInterruptManager();
-        specialregisters[9] = timer.new MilliClockRegister();
-        specialregisters[10] = timer.new TimerInterruptConfigRegister();
-        specialregisters[11] = timer.new TimerInterruptHandlerRegister();
-        specialregisters[12] = timer.new TimerInterruptTimeRegister();
+        specialregisters = new MigolSpecialRegister[8];
+        specialregisters[0] = new BranchRegister();
+        specialregisters[1] = new BranchLeaveHandlerRegister();
+        specialregisters[2] = new ExecRegister();
+        specialregisters[3] = new InterruptHandlerRegister();
+        specialregisters[4] = new InterruptResultRegister();
+        specialregisters[5] = new InterruptReturnAddressRegister();
+        specialregisters[6] = new InterruptWaitRegister();
+        specialregisters[7] = new ConsoleInputRegister();
+        
 
     }
 
@@ -85,46 +85,6 @@ public class MigolExecutionSession {
         return pplocked;
     }
 
-    private void setupIO() {
-        io = new IOManager();
-        FileOperationManager file = new FileOperationManager(io);
-        SocketManager soc = new SocketManager(io);
-        specialregisters[20] = io.getHandlerAddressRegister();
-        specialregisters[21] = io.getBufferAddressRegister();
-        specialregisters[22] = io.getBufferLengthRegister();
-        specialregisters[23] = io.getIoHandleRegister();
-        specialregisters[24] = io.getReadRequestRegister();
-        specialregisters[25] = io.getWriteRequestRegister();
-        specialregisters[26] = io.getCloseHandleRegister();
-        specialregisters[27] = io.getInterruptHandleRegister();
-        specialregisters[28] = io.getInterruptBufferAddressRegister();
-        specialregisters[29] = io.getInterruptBufferLengthRegister();
-        specialregisters[30] = io.getInterruptTypeRegister();
-        specialregisters[31] = io.getIOErrnoRegister();
-
-        specialregisters[40] = file.getFileNameAddressRegister();
-        specialregisters[41] = file.getFileNameLengthRegister();
-        specialregisters[42] = file.getFileOpenRegister();
-        specialregisters[43] = file.getFileModeRegister();
-        specialregisters[44] = file.getFileOpenInterruptNameAddressRegister();
-        specialregisters[45] = file.getFileOpenInterruptNameLengthRegister();
-        specialregisters[46] = file.getFileOpenInterruptHandleRegister();
-        specialregisters[47] = file.getFileOpenInterruptErrorRegister();
-        
-        specialregisters[48] = file.getFileSeekRegister();
-        specialregisters[49] = file.getFileSizeRegister();
-        
-
-        specialregisters[50] = soc.getOpenSocketInterruptHandlerRegister();
-        specialregisters[51] = soc.getIpAddressAddressRegister();
-        specialregisters[52] = soc.getPortRegister();
-        specialregisters[53] = soc.getIpAddressModeRegister();
-        specialregisters[54] = soc.getOpenSocketRegister();
-        specialregisters[55] = soc.getIntHandleRegister();
-        specialregisters[56] = soc.getIntIpAddrAddressRegister();
-        specialregisters[57] = soc.getIntIpPortRegister();
-        specialregisters[58] = soc.getIntErrnoRegister();
-    }
 
     public void setPPLocked(boolean bool) {
         pplocked = bool;
@@ -138,23 +98,10 @@ public class MigolExecutionSession {
         this.ret = ret;
     }
 
-    public MigolInterrupt getCurInterrupt() {
-        return curInterrupt;
+    public LinkedBlockingQueue<Integer> getResultQueue() {
+        return results;
     }
-
-    public LinkedBlockingQueue<MigolInterrupt> getInterruptQueue() {
-        return interrupts;
-    }
-
-    /**
-     * Resets the data memory and the program counter.
-     * @return  This session object.
-     */
-    public MigolExecutionSession reset() {
-        pp = 1;
-        memory = new int[memory.length];
-        return this;
-    }
+  
 
     /**
      * Returns the data memory array for the session as an array of 32-bit
@@ -195,8 +142,12 @@ public class MigolExecutionSession {
      * If an error occurs during execution.
      */
     public void executeProgram(MigolParsedProgram program) throws MigolExecutionException {
+        if(hasRun){
+            throw new MigolExecutionException("Session object is in a" +
+                    " finished state");
+        }
+
         try {
-            setupIO();
             while (pp > 0 && pp <= program.size()) {
                 pplocked = false;
                 MigolStatement next = program.getStatement(pp);
@@ -204,26 +155,28 @@ public class MigolExecutionSession {
                 if (!pplocked) {
                     pp++;
                 }
-                if (curInterrupt == null) {
-                    MigolInterrupt i;
+                if (!isInterruptMode) {
+                    Integer _result;
                     if (waitInterrupt) {
                         waitInterrupt = false;
                         try {
-                            i = interrupts.take();
+                            _result = results.take();
                         } catch (InterruptedException ex) {
                             throw new MigolExecutionException(
                                     "Interrupt waiting interrupted by runtime", ex, pp);
                         }
                     } else {
-                        i = interrupts.poll();
+                        _result = results.poll();
                     }
-                    if (i != null) {
-                        doInterrupt(i);
+                    if (_result != null) {
+                        this.ret = pp;
+                        this.pp = handler;
+                        this.result = _result.intValue();
+                        this.isInterruptMode = true;
                     }
                 }
             }
         } finally {
-            io.close();
         }
     }
 
@@ -267,17 +220,6 @@ public class MigolExecutionSession {
         }
     }
 
-    private void doInterrupt(MigolInterrupt i) {
-        this.ret = pp;
-        this.pp = i.getHandlerAddress(this);
-        this.curInterrupt = i;
-    }
-
-    private void returnInterrupt() {
-        this.curInterrupt = null;
-        this.pp = ret;
-        this.pplocked = true;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -305,76 +247,53 @@ public class MigolExecutionSession {
         return hash;
     }
 
-    private static class BranchSpecialRegister implements MigolSpecialRegister {
+    private static class BranchRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
-            return session.getPP();
+            return session.pp;
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            session.setPP(val);
-            session.setPPLocked(true);
+            session.pp = val;
+            session.pplocked = true;
         }
+    }
+
+    private static class BranchLeaveHandlerRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return session.pp;
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            session.pp = val;
+            session.pplocked = true;
+            session.isInterruptMode = false;
+            session.ret = -1;
+            session.result = -1;
+
+        }
+
     }
 
     private static class InterruptReturnAddressRegister implements MigolSpecialRegister {
 
-        public InterruptReturnAddressRegister() {
-        }
-
         public int read(MigolExecutionSession session) throws MigolExecutionException {
-            return session.getRet();
+            return session.ret;
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            session.setRet(val);
         }
+
     }
 
-    private static class InterruptFlagRegister implements MigolSpecialRegister {
-
-        private class SoftwareInterrupt implements MigolInterrupt {
-
-            public int getHandlerAddress(MigolExecutionSession session) {
-                return session.swip;
-            }
-
-        }
-        private SoftwareInterrupt i;
-
-        public InterruptFlagRegister() {
-            this.i = new SoftwareInterrupt();
-        }
+    private static class InterruptResultRegister implements MigolSpecialRegister {
 
         public int read(MigolExecutionSession session) throws MigolExecutionException {
-            return (session.curInterrupt == null) ? 0 : 1;
+            return session.result;
         }
 
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            int oldmode = (session.curInterrupt == null) ? 0 : 1;
-            int newmode = val;
-            if (oldmode == 0 && newmode == 1) {
-                session.getInterruptQueue().add(i);
-            } else if (oldmode == 1 && newmode == 0) {
-                session.returnInterrupt();
-            } else if (newmode != 0 && newmode != 1) {
-                throw new MigolExecutionException(session.getPP());
-            }
-
-        }
-    }
-
-    private static class SoftwareInterruptManagerAddressRegister implements MigolSpecialRegister {
-
-        public SoftwareInterruptManagerAddressRegister() {
-        }
-
-        public int read(MigolExecutionSession session) throws MigolExecutionException {
-            return session.swip;
-        }
-
-        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
-            session.swip = val;
         }
     }
 
@@ -388,4 +307,46 @@ public class MigolExecutionSession {
         public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
         }
     }
+
+    private static class ExecRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return 0;
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            MigolIOFunction func;
+            try {
+                func = session.ioFunctions.get(session.memory[val]);
+                func.executeIO(session, val);
+            } catch(NullPointerException ex){
+                throw new MigolExecutionException(session.pp);
+            }
+            
+        }
+    }
+
+    private static class InterruptHandlerRegister implements MigolSpecialRegister {
+
+        public int read(MigolExecutionSession session) throws MigolExecutionException {
+            return session.handler;
+        }
+
+        public void write(MigolExecutionSession session, int val) throws MigolExecutionException {
+            session.handler = val;
+        }
+
+    }
+
+    /*
+     BRANCH    # 
+     RETURN    *# 
+     RESULT    *! 
+     BREINT    #! 
+     STDIN     @  
+     WAIT      \  
+     EXEC      !  
+     HANDLER   !#
+     *
+    */
 }

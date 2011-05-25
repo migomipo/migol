@@ -78,6 +78,11 @@ public class MigolExecutionException extends Exception {
 
     }
 
+    public MigolExecutionException(String mess) {
+        super(mess);
+        this.statementpos = -1;
+    }
+
     /**
      * Returns the position of the statement which caused the execution error to occur.
      * @return  The position statement which caused this exception, as a
