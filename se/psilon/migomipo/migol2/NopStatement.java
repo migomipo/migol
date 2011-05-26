@@ -26,8 +26,6 @@
 
 package se.psilon.migomipo.migol2;
 
-import se.psilon.migomipo.migol2.execute.*;
-
 
 /**
  * A NOP Operation statement, which does nothing except moving the program
@@ -38,12 +36,8 @@ import se.psilon.migomipo.migol2.execute.*;
  */
 public class NopStatement implements MigolStatement {
     private static final long serialVersionUID = 8187417599523176457L;
-    /**
-     * Singleton instance for a NopStatement. Since NopStatement objects contain
-     * no data, it is recommended to use this instance instead of creating
-     * NopStatement objects.
-     */
-       
+
+    
     public NopStatement(){
     
     }

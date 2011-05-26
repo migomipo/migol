@@ -42,18 +42,42 @@ import static se.psilon.migomipo.migol2.ConditionalStatement.*;
  */
 public class MigolParser {
 
-    private LineNumberReader code;
+    private BufferedReader code;
     private List<MigolStatement> statements;
     private int strpos;
     private String cLine;
     private char c;
     private boolean endOfLine;
     private Map<String, Integer> constants;
-    private List<ProxyValue> proxies = new LinkedList<ProxyValue>();
+    private Map<String, LabelValue> labelValues = new HashMap<String, LabelValue>();
+    private List<SavedLabel> labels = new LinkedList<SavedLabel>();
     private int statementcount = 0;
+    private int linenum = 0;
+
+
+    private class SavedLabel {
+        private String cLine;
+        private int linenum, strpos;
+        private LabelValue value;
+
+        public SavedLabel(LabelValue value, String cLine, int linenum, int strpos) {
+            this.cLine = cLine;
+            this.linenum = linenum;
+            this.strpos = strpos;
+            this.value = value;
+        }
+
+        private void resolve(Map<String, Integer> constants) throws MigolParsingException {
+            try {
+                value.resolve(constants);
+            } catch(NullPointerException ex){
+                throw new MigolParsingException("Undefined label", cLine, linenum, strpos);
+            }
+        }
+    }
 
     private MigolParser(Reader reader) {
-        code = new LineNumberReader(reader);
+        code = new BufferedReader(reader);
         constants = new HashMap<String, Integer>();
     }
 
@@ -198,9 +222,8 @@ public class MigolParser {
         while ((line = code.readLine()) != null) {
             parseLine(line);
         }
-        for (ProxyValue proxy : proxies) {
-            MigolValue val = proxy.getVal();
-            proxy.setVal(val.postProcess(constants));
+        for (SavedLabel label : labels) {
+            label.resolve(constants);
         }
         return new MigolParsedProgram(statements);
 
@@ -227,6 +250,7 @@ public class MigolParser {
     }
 
     private void parseLine(String line) throws MigolParsingException {
+        linenum++;
         cLine = line;
         strpos = -1;
         do {
@@ -239,7 +263,7 @@ public class MigolParser {
             statements.add(parseStatement());
             skipSpacesAndComments();
         } while (!endOfLine && c == ',');
-        
+
     }
 
     private void skipSpacesAndComments() throws MigolParsingException {
@@ -254,7 +278,8 @@ public class MigolParser {
                     endOfLine = true;
                     break;
                 } else { // Single slashes are not allowed
-                    throw new MigolParsingException("Unexpected /", cLine, code.getLineNumber(), strpos);
+                    throw new MigolParsingException("Unexpected /", cLine,
+                            linenum, strpos);
                 }
             } else if (c == '\"') {
                 parseConstant();
@@ -266,20 +291,30 @@ public class MigolParser {
 
     private MigolStatement parseStatement() throws MigolParsingException {
         try {
-            MigolValue val;
+
+            WriteValue val;
             MigolStatement statement = null;
             if (c == '_') {
                 nextChar();
                 statement = new NopStatement();
             } else {
+                int startpos = strpos;
                 val = parseValue();
                 if (c == '>') {
+                    ReadValue val2;
+                    try {
+                        val2 = (ReadValue) val;
+                    } catch (ClassCastException ex) {
+                        throw new MigolParsingException("Write-only value used in " +
+                                "reading position", cLine, linenum, startpos);
+                    }
+
                     nextChar();
                     if (c == '-') {
                         nextChar();
-                        statement = new ConsoleIOStatement(val, 1);
+                        statement = new ConsoleIOStatement(val2, 1);
                     } else {
-                        statement = new ConsoleIOStatement(val, 0);
+                        statement = new ConsoleIOStatement(val2, 0);
                     }
                 } else {
                     // Assignment statements!
@@ -293,7 +328,7 @@ public class MigolParser {
             }
             if (c == '?') {
                 int condtype = parseConditionalType();
-                MigolValue condvalue = parseValue();
+                ReadValue condvalue = parseReadValue();
                 statement = new ConditionalStatement(statement, condtype, condvalue);
             }
             if (c == ':') {
@@ -307,11 +342,11 @@ public class MigolParser {
             return statement;
 
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new MigolParsingException("Unexpected end of line", cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unexpected end of line", cLine, linenum, strpos);
         }
     }
 
-    private MigolValue parseValue() throws MigolParsingException {
+    private WriteValue parseValue() throws MigolParsingException {
         int defers = 0; // The number of defers.
 
         try {
@@ -325,68 +360,74 @@ public class MigolParser {
                     break;
                 }
             }
-            MigolValue mval;
+            WriteValue mval;
             if (c == '#') {
                 nextChar();
-                if(c == '!'){
+                if (c == '!') {
                     nextChar();
-                    mval = new IntegerValue(-2, defers);
+                    mval = BranchEnableInterruptValue.getInstance();
                 } else {
-                    mval = new IntegerValue(-1, defers);
+                    mval = BranchValue.getInstance();
                 }
-                
+
             } else if (c == '@') {
                 nextChar();
-                mval = new IntegerValue(-8, defers);
-            } else if (c == '!'){
+                mval = ConsoleInputValue.getInstance();
+            } else if (c == '!') {
                 nextChar();
-                if(c == '#'){
+                if (c == '#') {
                     nextChar();
-                    mval = new IntegerValue(-4, defers);
+                    mval = InterruptHandlerValue.getInstance();
                 } else {
-                    mval = new IntegerValue(-3, defers);
+                    mval = new ExecValue();
                 }
-            } else if (c == '*'){
+            } else if (c == '*') {
                 nextChar();
-                if(c == '#'){
+                if (c == '#') {
                     nextChar();
-                    mval = new IntegerValue(-6, defers);
-                } else if (c == '!'){
+                    mval = InterruptReturnAddressValue.getInstance();
+                } else if (c == '!') {
                     nextChar();
-                    mval = new IntegerValue(-5, defers);
+                    mval = InterruptResultValue.getInstance();
                 } else {
-                    throw new MigolParsingException("Unknown value type", cLine, code.getLineNumber(), strpos);
+                    throw new MigolParsingException("Unknown value type", cLine, linenum, strpos);
                 }
-            } else if (c == '\\'){
+            } else if (c == '\\') {
                 nextChar();
-                mval = new IntegerValue(-7, defers);
+                mval = InterruptWaitValue.getInstance();
             } else if (c == '\'') {
                 nextChar();
                 int val = (int) c;
                 nextChar();
-                mval = new IntegerValue(val, defers);
+                mval = IntegerValue.getInstance(val);
             } else if (isNum(c) || c == '-') {
                 int val = parseIntegerValue();
-                mval = new IntegerValue(val, defers);
+                mval = IntegerValue.getInstance(val);
             } else if (c >= 'a' && c <= 'z') {
-                int strposstart = strpos;
+                int labelpos = strpos;
                 String name = parseName();
-                ProxyValue proxy = new ProxyValue(
-                        new ConstantValue(name, defers, cLine,
-                        code.getLineNumber(), strposstart));
-                proxies.add(proxy);
-                mval = proxy;
+                LabelValue l = labelValues.get(name);
+                if(l == null){
+                    l = new LabelValue(name);
+                    labelValues.put(name, l);
+                    labels.add(new SavedLabel(l, cLine, linenum, labelpos));
+                    // Stores the first occurence of each label
+                }
+                mval = l;
             } else {
-                throw new MigolParsingException("Unknown value type", cLine, code.getLineNumber(), strpos);
+                throw new MigolParsingException("Unknown value type", cLine, linenum, strpos);
             }
             int right = checkRightBrackets();
             if (right != defers && right != 0) {
-                throw new MigolParsingException("Incorrect value", cLine, code.getLineNumber(), strpos);
+                throw new MigolParsingException("Incorrect value", cLine, linenum, strpos);
+            }
+            if (defers > 0) {
+                mval = new DeferValue(mval, defers);
             }
             return mval;
 
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new MigolParsingException("Unexpected end of line", cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unexpected end of line", cLine, linenum, strpos);
         }
 
     }
@@ -403,66 +444,77 @@ public class MigolParser {
             char opc = c;
             nextChar();
             if (opc == '+') {
-                return new AssignmentOperation(OP_PLUS, parseValue());
+                return new AssignmentOperation(OP_PLUS, parseReadValue());
             } else if (opc == '-') {
-                return new AssignmentOperation(OP_MINUS, parseValue());
+                return new AssignmentOperation(OP_MINUS, parseReadValue());
             } else if (opc == '*') {
-                return new AssignmentOperation(OP_MUL, parseValue());
+                return new AssignmentOperation(OP_MUL, parseReadValue());
             } else if (opc == '/') {
-                return new AssignmentOperation(OP_DIVIDE, parseValue());
+                return new AssignmentOperation(OP_DIVIDE, parseReadValue());
             } else if (opc == '%') {
-                return new AssignmentOperation(OP_MOD, parseValue());
+                return new AssignmentOperation(OP_MOD, parseReadValue());
             } else if (opc == '^') {
-                return new AssignmentOperation(OP_XOR, parseValue());
+                return new AssignmentOperation(OP_XOR, parseReadValue());
             } else if (opc == '&') {
-                return new AssignmentOperation(OP_AND, parseValue());
+                return new AssignmentOperation(OP_AND, parseReadValue());
             } else if (opc == '|') {
-                return new AssignmentOperation(OP_OR, parseValue());
+                return new AssignmentOperation(OP_OR, parseReadValue());
             } else if (opc == '=') {
-                return new AssignmentOperation(OP_EQ, parseValue());
+                return new AssignmentOperation(OP_EQ, parseReadValue());
             } else if (opc == '<') {
                 if (c == '<') {
                     nextChar();
                     if (c == '_') {
                         nextChar();
-                        return new AssignmentOperation(OP_LRO, parseValue());
+                        return new AssignmentOperation(OP_LRO, parseReadValue());
                     } else {
-                        return new AssignmentOperation(OP_LSH, parseValue());
+                        return new AssignmentOperation(OP_LSH, parseReadValue());
                     }
                 } else if (c == '=') {
                     nextChar();
-                    return new AssignmentOperation(OP_LTEQ, parseValue());
+                    return new AssignmentOperation(OP_LTEQ, parseReadValue());
                 } else if (c == '>') {
                     nextChar();
-                    return new AssignmentOperation(OP_NEQ, parseValue());
+                    return new AssignmentOperation(OP_NEQ, parseReadValue());
                 } else {
-                    return new AssignmentOperation(OP_LT, parseValue());
+                    return new AssignmentOperation(OP_LT, parseReadValue());
                 }
             } else if (opc == '>') {
                 if (c == '>') {
                     nextChar();
                     if (c == '>') {
                         nextChar();
-                        return new AssignmentOperation(OP_RSHL, parseValue());
+                        return new AssignmentOperation(OP_RSHL, parseReadValue());
                     } else if (c == '_') {
                         nextChar();
-                        return new AssignmentOperation(OP_RRO, parseValue());
+                        return new AssignmentOperation(OP_RRO, parseReadValue());
                     } else {
-                        return new AssignmentOperation(OP_RSHA, parseValue());
+                        return new AssignmentOperation(OP_RSHA, parseReadValue());
                     }
                 } else if (c == '=') {
                     nextChar();
-                    return new AssignmentOperation(OP_GTEQ, parseValue());
+                    return new AssignmentOperation(OP_GTEQ, parseReadValue());
                 } else {
-                    return new AssignmentOperation(OP_GT, parseValue());
+                    return new AssignmentOperation(OP_GT, parseReadValue());
                 }
             }
         } else {
-            return new AssignmentOperation(OP_ASSIGN, parseValue());
+            return new AssignmentOperation(OP_ASSIGN, parseReadValue());
         }
-        throw new MigolParsingException("Unknown assignment operator", cLine, code.getLineNumber(), strpos - 1);
+        throw new MigolParsingException("Unknown assignment operator", cLine,
+                linenum, strpos - 1);
         // The pointer points to the character after the incorrect character
 
+    }
+
+    private ReadValue parseReadValue() throws MigolParsingException {
+        int startpos = strpos;
+        try {
+            return (ReadValue) parseValue();
+        } catch (ClassCastException ex) {
+            throw new MigolParsingException("Write-only value used in " +
+                    "reading position", cLine, linenum, startpos);
+        }
     }
 
     private int parseConditionalType()
@@ -496,7 +548,8 @@ public class MigolParser {
             nextChar();
             return COND_EQ;
         } else {
-            throw new MigolParsingException("Unknown conditional operator", cLine, code.getLineNumber(), strpos);
+            throw new MigolParsingException("Unknown conditional operator", 
+                    cLine, linenum, strpos);
         }
     }
 
@@ -518,12 +571,12 @@ public class MigolParser {
         try {
             if (strpos <= start) {
                 throw new MigolParsingException(
-                        "Incorrect value", cLine, code.getLineNumber(), strpos);
+                        "Incorrect value", cLine, linenum, strpos);
             }
             return Integer.parseInt(cLine.substring(start, strpos), 10);
         } catch (NumberFormatException ex) {
             throw new MigolParsingException(
-                    "Incorrect value", cLine, code.getLineNumber(), strpos);
+                    "Incorrect value", cLine, linenum, strpos);
         }
     }
 
@@ -537,7 +590,7 @@ public class MigolParser {
         }
         if (strpos <= start) {
             throw new MigolParsingException(
-                    "Incorrect name", cLine, code.getLineNumber(), strpos);
+                    "Incorrect name", cLine, linenum, strpos);
         }
         return cLine.substring(start, strpos);
 
@@ -570,7 +623,7 @@ public class MigolParser {
         if (i != null) {
             throw new MigolParsingException(
                     "Constant defined multiple times", cLine,
-                    code.getLineNumber(), namestrpos);
+                    linenum, namestrpos);
         }
     }
 
@@ -582,7 +635,7 @@ public class MigolParser {
         if (c != '=') {
             throw new MigolParsingException(
                     "Unexpected character",
-                    cLine, code.getLineNumber(), strpos);
+                    cLine, linenum, strpos);
         }
         nextChar();
         int value = parseIntegerValue();
@@ -594,7 +647,7 @@ public class MigolParser {
         if (!(endOfLine || isBlank(c) || c == '/' || c == ',')) {
             throw new MigolParsingException(
                     "Unexpected character",
-                    cLine, code.getLineNumber(), strpos);
+                    cLine, linenum, strpos);
         }
     }
 }

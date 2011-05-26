@@ -5,9 +5,6 @@
 
 package se.psilon.migomipo.migol2;
 
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-
 /**
  *
  * @author John
@@ -15,19 +12,19 @@ import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
 public class ConsoleIOStatement implements MigolStatement {
     
     public int mode;
-    public MigolValue val;
+    public ReadValue val;
 
-    public ConsoleIOStatement(MigolValue val, int mode) {
+    public ConsoleIOStatement(ReadValue val, int mode) {
         this.val = val;
         this.mode = mode;
     }
     
     public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {
         if(mode == 0){
-            System.out.write(val.fetchValue(session));
+            System.out.write(val.get(session));
             System.out.flush();
         } else if(mode == 1){
-            System.out.print(val.fetchValue(session));
+            System.out.print(val.get(session));
         } else throw new IllegalStateException();
     }
   

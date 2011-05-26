@@ -1,9 +1,9 @@
 package se.psilon.migomipo.migol2.io;
 
+import se.psilon.migomipo.migol2.MigolExecutionSession;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import se.psilon.migomipo.migol2.execute.*;
 
 public class FileOperationManager {
 
@@ -14,6 +14,11 @@ public class FileOperationManager {
     }
 
     private class FileOpenRequest implements Runnable {
+
+        // structpos : Function ID
+        // structpos + 1: file name position
+        // structpos + 2: file name length
+        // structpos + 3: mode
 
         private MigolExecutionSession session;
         private int structPos;
@@ -27,15 +32,15 @@ public class FileOperationManager {
             int error = 0;
             int handle = -1;
             int[] mem = session.getMemory();
-            int filenamelen = mem[structPos + 1];
-            int filenamepos = mem[structPos];
+            int filenamelen = mem[structPos + 2];
+            int filenamepos = mem[structPos + 1];
             byte[] bytes = new byte[filenamelen];
 
             for (int i = 0; i < filenamelen; i++) {
                 bytes[i] = (byte) mem[filenamepos + i];
             }
             try {
-                int filemode = mem[structPos + 2];
+                int filemode = mem[structPos + 3];
                 String mode;
                 if (filemode == 0) {
                     mode = "r";

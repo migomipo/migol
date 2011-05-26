@@ -26,8 +26,6 @@
 package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
  * Represents a single assignment operation.
@@ -119,9 +117,9 @@ public class AssignmentOperation implements Serializable {
     public static final int OP_GTEQ = 20;
     
     private final int operation;
-    private final MigolValue value;
+    private final ReadValue value;
 
-    public AssignmentOperation(int operation, MigolValue val) {
+    public AssignmentOperation(int operation, ReadValue val) {
         this.operation = operation;
         this.value = val;
     }
@@ -134,14 +132,14 @@ public class AssignmentOperation implements Serializable {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If an error occurs during the operation.
      */
-    public void operation(MigolExecutionSession session, int address) throws MigolExecutionException {
+    public void operation(MigolExecutionSession session, WriteValue target) throws MigolExecutionException {
         int result;
         if (operation == OP_ASSIGN) {
-            result = value.fetchValue(session);
+            result = value.get(session);
 
         } else {
-            int currentvalue = session.registerGet(address);
-            int cal = value.fetchValue(session);
+            int currentvalue = target.defer(session);
+            int cal = value.get(session);
 
             switch (operation) {
                 case OP_PLUS:
@@ -206,7 +204,7 @@ public class AssignmentOperation implements Serializable {
                     throw new MigolExecutionException("Unknown assignment operator", session.getPP());
             }
         }
-        session.registerPut(address, result);
+        target.set(session, result);
     }
 
     private int rotl(int value, int shift) {

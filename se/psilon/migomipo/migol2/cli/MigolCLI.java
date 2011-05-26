@@ -26,9 +26,11 @@
 package se.psilon.migomipo.migol2.cli;
 
 import se.psilon.migomipo.migol2.*;
-import se.psilon.migomipo.migol2.execute.*;
 import se.psilon.migomipo.migol2.parse.*;
 import java.io.*;
+import se.psilon.migomipo.migol2.io.FileOperationManager;
+import se.psilon.migomipo.migol2.io.IOManager;
+import se.psilon.migomipo.migol2.io.SocketManager;
 
 /**
  * The command line interface for Migol 09 2.3.
@@ -41,17 +43,12 @@ import java.io.*;
  */
 public class MigolCLI {
 
-    private static final String VERSION = "2.3.2";
+    private static final String VERSION = "11.0.0";
     private static final String VERSIONINFO =
-            "MigoMipo Migol 09 interpreter version " + VERSION + "\n" +
-            "\u00A9 2009 John Eriksson";
-    private static final String USAGEINFO =
-            "Usage: java -jar Migol2.jar [flags] [--] [filename]";
-    private static final String FLAGSINFO =
-            "Flags: \n" +
-            "  -e program      Ignore file name, and interpret line after \n" +
-            "                  flag (several -e's allowed)";
+            "MigoMipo Migol 11 interpreter version " + VERSION + "\n" +
+            "\u00A9 2009-2011 John Eriksson";
 
+    
     public static void main(String[] args) {
         boolean filemode = true;
         boolean flag = true;
@@ -64,19 +61,7 @@ public class MigolCLI {
                     System.out.println(VERSIONINFO);
                     return;
                 }
-                if (arg.equals("--help")) {
-                    System.out.println(USAGEINFO);
-                    System.out.println(FLAGSINFO);
-                    return;
-                } else if (arg.equals("--")) {
-                    flag = false;
-                } else if (arg.equals("-e")) {
-                    filemode = false;
-                    if (i + 1 < args.length) {
-                        i++;
-                        interpretline = interpretline.concat(args[i] + "\n");
-                    }
-                } else {
+                else {
                     System.err.println("Error: Unknown flag \"" + arg + "\"");
                     System.exit(1);
                 }
@@ -93,7 +78,7 @@ public class MigolCLI {
         }
 
         if (interpretline.length() == 0) {
-            System.err.println(USAGEINFO);
+            System.err.println(VERSIONINFO);
             System.exit(1);
         } else {
             interpret(new StringReader(interpretline));
@@ -103,8 +88,16 @@ public class MigolCLI {
     private static void interpret(Reader read) {
         try {
             MigolParsedProgram prog = MigolParser.parse(read);
-            MigolExecutionSession session = new MigolExecutionSession();
-            
+            MigolExecutionSession session = new MigolExecutionSession();  
+            IOManager io = new IOManager();
+            FileOperationManager file = new FileOperationManager(io);
+            SocketManager soc = new SocketManager(io);
+            session.addIOFunction(10, io.getReadStreamFunction());
+            session.addIOFunction(11, io.getWriteStreamFunction());
+            session.addIOFunction(12, io.getCloseStreamFunction());
+            session.addIOFunction(20, file.getOpenFileFunc());
+            session.addIOFunction(30, soc.getOpenSocketFunc());
+
             session.executeProgram(prog);
         } catch (IOException ex) {
             System.err.println("I/O error: " + ex.getMessage());

@@ -26,8 +26,6 @@
 package se.psilon.migomipo.migol2;
 
 import java.util.Arrays;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 
 /**
  * Represents a Migol assignment statement.
@@ -55,7 +53,7 @@ public class AssignmentStatement implements MigolStatement {
     /**
      * The target address.
      */
-    private MigolValue target;
+    private WriteValue target;
     /**
      * The assignment operators.
      */
@@ -67,7 +65,7 @@ public class AssignmentStatement implements MigolStatement {
      * @param target    The target address.
      * @param operation The set of operations to be performed on the target address.
      */
-    public AssignmentStatement(MigolValue target, AssignmentOperation[] operation) {
+    public AssignmentStatement(WriteValue target, AssignmentOperation[] operation) {
         this.target = target;
         this.operations = operation;
     }
@@ -97,10 +95,9 @@ public class AssignmentStatement implements MigolStatement {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException If an error
      * occurs during the operation.
      */
-    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {       
-        int targetaddress = target.fetchValue(session);
+    public void executeStatement(MigolExecutionSession session) throws MigolExecutionException {              
         for(AssignmentOperation op : operations){           
-            op.operation(session, targetaddress);
+            op.operation(session, target);
         }
     }
 

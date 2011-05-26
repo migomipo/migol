@@ -25,10 +25,11 @@
  */
 package se.psilon.migomipo.migol2;
 
+
+import java.util.HashMap;
 import java.util.Map;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
-import se.psilon.migomipo.migol2.parse.MigolParsingException;
+import java.lang.ref.*;
+
 
 /**
  * Represents an accessible value in the Migol environment.
@@ -37,57 +38,51 @@ import se.psilon.migomipo.migol2.parse.MigolParsingException;
  * use to address memory.
  * @author John Eriksson
  */
-public class IntegerValue implements java.io.Serializable, MigolValue {
+public class IntegerValue implements java.io.Serializable, ReadValue {
 
-    /**
-     * The number of deferring steps.
-     */
-    private final int defers;
+    private static final Map<Integer, WeakReference<IntegerValue>> instances =
+            new HashMap<Integer, WeakReference<IntegerValue>>();
+
+    public static IntegerValue getInstance(int i){
+        IntegerValue val = null;
+        WeakReference<IntegerValue> ref = instances.get(i);
+        if(ref != null){
+            val = ref.get();
+        }
+        if(val == null){
+            val = new IntegerValue(i);
+            instances.put(i, new WeakReference<IntegerValue>(val));
+        }
+        return val;
+
+
+    }
+
 
     /*
      * The integer value.
      */
     private final int value;
 
-    public IntegerValue(int value, int defers) {
-        this.defers = defers;
+    public IntegerValue(int value) {
+        
         this.value = value;
-    }
-
-    /**
-     * Returns the resulting memory value.
-     * @param session     The session used for fetching the value.
-     * @return  The resulting value as an 32-bit signed integer (as Java defines
-     * the int data type).
-     * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException  If an error
-     * occurs while fetching the value.
-     *
-     */
-    public int fetchValue(MigolExecutionSession session) throws MigolExecutionException {
-        int temp = value;
-        for (int i = 0; i < defers; i++) {
-            temp = session.registerGet(temp);
-            // No recursion! A huge improvement over the older, more crappy
-            // interpreter.
-        }
-        return temp;
-    }
-
-    /**
-     * Returns the number of deferring steps for the value.
-     *
-     * @return  The number of deferring steps.
-     */
-    public int getDefers() {
-        return defers;
     }
 
     public int getInternalValue() {
         return value;
     }
 
-    public MigolValue postProcess(Map<String, Integer> constants) throws MigolParsingException {
-        return this;
+    public int get(MigolExecutionSession session) {
+        return value;
+    }
+
+    public int defer(MigolExecutionSession session) {
+        return session.getMemory()[value];
+    }
+
+    public void set(MigolExecutionSession session, int val) {
+        session.getMemory()[value] = val;
     }
 
 }

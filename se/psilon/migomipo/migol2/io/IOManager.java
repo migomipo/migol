@@ -1,10 +1,10 @@
 package se.psilon.migomipo.migol2.io;
 
+import se.psilon.migomipo.migol2.MigolExecutionSession;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.util.Map;
-import se.psilon.migomipo.migol2.execute.*;
 import java.util.concurrent.*;
 
 public class IOManager {
@@ -75,10 +75,8 @@ public class IOManager {
                 }
 
             } catch (IOException ex) {
-                ex.printStackTrace();
                 error = 1;
-            } catch (NullPointerException ex) {
-                ex.printStackTrace();
+            } catch (NullPointerException ex) {                
                 error = 2;
             }
             mem[structPos + 4] = error;

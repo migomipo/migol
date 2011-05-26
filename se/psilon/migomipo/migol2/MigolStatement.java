@@ -26,8 +26,6 @@
 package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
 import se.psilon.migomipo.migol2.parse.MigolParsingException;
 
 /**

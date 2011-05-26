@@ -3,7 +3,7 @@ package se.psilon.migomipo.migol2.io;
 import java.io.*;
 import java.net.*;
 import java.nio.channels.SocketChannel;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
+import se.psilon.migomipo.migol2.MigolExecutionSession;
 
 
 public class SocketManager {
@@ -15,6 +15,13 @@ public class SocketManager {
     }
   
     private class OpenSocketRequest implements Runnable {
+
+        // structpos: function ID
+        // structpos + 1: address type
+        // structpos + 2: ip address address
+        // structpos + 3: port
+        // structpos + 4: error
+        // structpos + 5: handle
 
         private final int structPos;
         private final MigolExecutionSession session;
@@ -30,9 +37,9 @@ public class SocketManager {
             int handle = -1;
             try {
                 byte[] ip;
-                int ipaddresstype = mem[structPos];
-                int addresspos = mem[structPos + 1];
-                int port = mem[structPos + 2];
+                int ipaddresstype = mem[structPos + 1];
+                int addresspos = mem[structPos + 2];
+                int port = mem[structPos + 3];
                 if (ipaddresstype == 0) {
                     ip = new byte[4];
                     for (int i = 0; i < 4; i++) {

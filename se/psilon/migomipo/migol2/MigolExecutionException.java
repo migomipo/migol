@@ -23,7 +23,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package se.psilon.migomipo.migol2.execute;
+package se.psilon.migomipo.migol2;
 
 /**
  * This exception is thrown when an error occurs during the execution of a

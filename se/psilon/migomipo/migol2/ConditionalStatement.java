@@ -25,9 +25,6 @@
  */
 package se.psilon.migomipo.migol2;
 
-import se.psilon.migomipo.migol2.execute.MigolExecutionException;
-import se.psilon.migomipo.migol2.execute.MigolExecutionSession;
-
 /**
  * Represents a conditional statement.
  *
@@ -79,14 +76,14 @@ public class ConditionalStatement implements MigolStatement {
     private static final long serialVersionUID = -4829698528440668056L;
     private final MigolStatement statement;
     private final int condtype;
-    private final MigolValue value;
+    private final ReadValue value;
     /**
      * Constructs a new conditional statement.
      * @param statement     The statement to be executed if the
      * conditional operation evaluates to true.
      * @param cond          The conditional operation.
      */
-    public ConditionalStatement(MigolStatement statement, int condtype, MigolValue value) {
+    public ConditionalStatement(MigolStatement statement, int condtype, ReadValue value) {
         this.condtype = condtype;
         this.value = value;
         this.statement = statement;
@@ -109,7 +106,7 @@ public class ConditionalStatement implements MigolStatement {
     }
 
     private boolean evaluate(MigolExecutionSession session) throws MigolExecutionException {
-        int val = value.fetchValue(session);
+        int val = value.get(session);
         switch (condtype) {
             case COND_GT:
                 return val > 0;
