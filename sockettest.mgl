@@ -1,25 +1,40 @@
--51<opensocket  // Kod för hantering av socketöppnande finns i address opensocket
-100<127  // Addressen, localhost
-101<0    // Just nu saknas DNS-stöd
-102<0
-103<1
--52<100  // Sätter addressen där IP-addressen ligger
--53<30000 // Port-nummer
--54<0 // 0 = IPv4-address, 4 bytes
-[-55] // Startar socketöppnande
-[-6] // Blockerar till interrupt hanteras
--22<120  // Sätter address för läsbuffer
--23<5 // Sätter storlek på läsbuffer
--24<[10] // Definierar vilken file descriptor som ska läsas
-         // Socketöppnandehanteringen sparade fd i [10]
--21<read // Sätter address för I/O-operationshanterare
-[-25] // Startar läsoperation
-[-6] // Blockerar till interrupt hanteras
-[120]>,[121]>,[122]>,[123]>,[124]> // Skriver ut buffer
-#<30000  // Avslutar program
-10<[-56]:opensocket // Sparar ny file descriptor i [10]
--4<0 // Avslutar interrupthanteringsrutin
-[-32]:read // Avslutar interrupthanteringsrutin direkt
--4<0
+100<127,101<0,102<0,103<1
+
+
+49<opensockethandler, 50<30, 51<0, 52<100, 53<30000
+
+!#<handler
+!<50
+\<0?=[2]
+#<$-1?=[2]
+'H>
+
+2<0
+59<readstreamhandler, 60<10, 61<[10], 62<120, 63<3000
+!<60
+\<0?=[2]
+#<$-1?=[2]
+
+5<120
+#<$+4?=[[5]]
+[[5]]>
+5<$+1
+#<$-3
+10>
+#<30000
+
+_:handler
+0<[*!]<$-1
+#<[[0]]
+
+_:opensockethandler
+2<1
+3<[*!]<$+5
+10<[[3]]
+#!<[*#]
+
+_:readstreamhandler
+2<1
+#!<[*#]
 
 
