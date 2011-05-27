@@ -30,6 +30,7 @@ import se.psilon.migomipo.migol2.parse.*;
 import java.io.*;
 import se.psilon.migomipo.migol2.io.FileOperationManager;
 import se.psilon.migomipo.migol2.io.IOManager;
+import se.psilon.migomipo.migol2.io.IOUtilities;
 import se.psilon.migomipo.migol2.io.SocketManager;
 
 /**
@@ -43,7 +44,7 @@ import se.psilon.migomipo.migol2.io.SocketManager;
  */
 public class MigolCLI {
 
-    private static final String VERSION = "11.0.2";
+    private static final String VERSION = "11.0.3";
     private static final String VERSIONINFO =
             "MigoMipo Migol 11 interpreter version " + VERSION + "\n" +
             "\u00A9 2009-2011 John Eriksson";
@@ -90,15 +91,9 @@ public class MigolCLI {
             MigolParsedProgram prog = MigolParser.parse(read);
             MigolExecutionSession session = new MigolExecutionSession();  
             IOManager io = new IOManager();
-            FileOperationManager file = new FileOperationManager(io);
-            SocketManager soc = new SocketManager(io);
-            session.addIOFunction(10, io.getReadStreamFunction());
-            session.addIOFunction(11, io.getWriteStreamFunction());
-            session.addIOFunction(12, io.getCloseStreamFunction());
-            session.addIOFunction(20, file.getOpenFileFunc());
-            session.addIOFunction(30, soc.getOpenSocketFunc());
-
+            IOUtilities.addStdIOFunctions(session, io);
             session.executeProgram(prog);
+            io.close();
         } catch (IOException ex) {
             System.err.println("I/O error: " + ex.getMessage());
             System.exit(1);
