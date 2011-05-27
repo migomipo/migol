@@ -24,5 +24,5 @@ public class MigolTest {
         System.out.println("Parsing completed");
         prog.executeProgram(new MigolExecutionSession());
 
-    }
+}
 }

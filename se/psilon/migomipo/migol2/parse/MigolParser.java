@@ -296,7 +296,7 @@ public class MigolParser {
             MigolStatement statement = null;
             if (c == '_') {
                 nextChar();
-                statement = new NopStatement();
+                statement = NopStatement.getInstance();
             } else {
                 int startpos = strpos;
                 val = parseValue();
@@ -316,7 +316,7 @@ public class MigolParser {
                     } else {
                         statement = new ConsoleIOStatement(val2, 0);
                     }
-                } else {
+                } else if(c == '<') {
                     // Assignment statements!
                     List<AssignmentOperation> ops = new LinkedList<AssignmentOperation>();
                     while (c == '<') {
@@ -324,7 +324,7 @@ public class MigolParser {
                     }
                     statement = new AssignmentStatement(val, ops.toArray(new AssignmentOperation[0]));
 
-                }
+                } else throw new MigolParsingException("Incorrect statement", cLine, linenum, strpos);
             }
             if (c == '?') {
                 int condtype = parseConditionalType();
@@ -379,7 +379,7 @@ public class MigolParser {
                     nextChar();
                     mval = InterruptHandlerValue.getInstance();
                 } else {
-                    mval = new ExecValue();
+                    mval = ExecValue.getInstance();
                 }
             } else if (c == '*') {
                 nextChar();
@@ -422,7 +422,7 @@ public class MigolParser {
                 throw new MigolParsingException("Incorrect value", cLine, linenum, strpos);
             }
             if (defers > 0) {
-                mval = new DeferValue(mval, defers);
+                mval = DeferValue.getInstance(mval, defers);
             }
             return mval;
 

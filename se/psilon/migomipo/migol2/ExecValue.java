@@ -6,6 +6,8 @@ public class ExecValue implements WriteValue {
 
     private static final ExecValue instance = new ExecValue();
 
+    private ExecValue(){};
+
     public static ExecValue getInstance() {
         return instance;
     }

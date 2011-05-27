@@ -5,6 +5,8 @@ public class InterruptHandlerValue implements WriteValue {
 
     private static final InterruptHandlerValue instance = new InterruptHandlerValue();
 
+    private InterruptHandlerValue(){}
+
     public static InterruptHandlerValue getInstance() {
         return instance;
     }

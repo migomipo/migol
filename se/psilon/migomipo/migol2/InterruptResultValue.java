@@ -5,6 +5,9 @@ public class InterruptResultValue implements WriteValue {
 
     private static final InterruptResultValue instance = new InterruptResultValue();
 
+    private InterruptResultValue(){}
+
+
     public static InterruptResultValue getInstance() {
         return instance;
     }

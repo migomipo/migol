@@ -26,7 +26,6 @@
 package se.psilon.migomipo.migol2;
 
 import java.io.Serializable;
-import se.psilon.migomipo.migol2.parse.MigolParsingException;
 
 /**
  * This interface represents an executable Migol statement.

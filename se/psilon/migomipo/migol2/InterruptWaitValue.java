@@ -5,6 +5,8 @@ public class InterruptWaitValue implements WriteValue {
 
     private static final InterruptWaitValue instance = new InterruptWaitValue();
 
+    private InterruptWaitValue(){}
+
     public static InterruptWaitValue getInstance() {
         return instance;
     }

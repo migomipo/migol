@@ -37,8 +37,13 @@ package se.psilon.migomipo.migol2;
 public class NopStatement implements MigolStatement {
     private static final long serialVersionUID = 8187417599523176457L;
 
-    
-    public NopStatement(){
+    private static final NopStatement instance = new NopStatement();
+
+    public static NopStatement getInstance() {
+        return instance;
+    }
+
+    private NopStatement(){
     
     }
     /**

@@ -5,6 +5,8 @@ public class ConsoleInputValue implements WriteValue {
 
     private static final ConsoleInputValue instance = new ConsoleInputValue();
 
+    private ConsoleInputValue(){}
+
     public static ConsoleInputValue getInstance() {
         return instance;
     }

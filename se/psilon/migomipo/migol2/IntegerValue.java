@@ -58,13 +58,9 @@ public class IntegerValue implements java.io.Serializable, ReadValue {
 
     }
 
-
-    /*
-     * The integer value.
-     */
     private final int value;
 
-    public IntegerValue(int value) {
+    private IntegerValue(int value) {
         
         this.value = value;
     }
@@ -84,5 +80,27 @@ public class IntegerValue implements java.io.Serializable, ReadValue {
     public void set(MigolExecutionSession session, int val) {
         session.getMemory()[value] = val;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final IntegerValue other = (IntegerValue) obj;
+        if (this.value != other.value) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.value;
+    }
+
+
 
 }

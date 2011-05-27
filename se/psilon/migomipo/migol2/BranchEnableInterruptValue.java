@@ -4,6 +4,8 @@ public class BranchEnableInterruptValue implements WriteValue {
 
     private static final BranchEnableInterruptValue instance = new BranchEnableInterruptValue();
 
+    private BranchEnableInterruptValue(){}
+
     public static BranchEnableInterruptValue getInstance() {
         return instance;
     }

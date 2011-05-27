@@ -6,6 +6,8 @@ public class BranchValue implements WriteValue {
 
     private static final BranchValue instance = new BranchValue();
 
+    private BranchValue(){}
+
     public static BranchValue getInstance() {
         return instance;
     }

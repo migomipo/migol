@@ -5,6 +5,8 @@ public class InterruptReturnAddressValue implements WriteValue {
 
     private static final InterruptReturnAddressValue instance = new InterruptReturnAddressValue();
 
+    private InterruptReturnAddressValue(){}
+
     public static InterruptReturnAddressValue getInstance() {
         return instance;
     }
