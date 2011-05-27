@@ -7,22 +7,10 @@ import java.util.WeakHashMap;
 
 public class DeferValue implements ReadValue {
 
-    private static final Map<DeferValue, WeakReference<DeferValue>> values =
-            new WeakHashMap<DeferValue, WeakReference<DeferValue>>();
+    private static final FlyweightStore<DeferValue> instances = new FlyweightStore<DeferValue>();
 
     public static DeferValue getInstance(WriteValue value, int defers){
-        DeferValue v = new DeferValue(value, defers);
-        WeakReference<DeferValue> v2 = values.get(v);
-        DeferValue v3 = null;
-        if(v2 != null){
-            v3 = v2.get();
-        }
-        if(v3 == null){
-            v3 = v;
-            values.put(v, new WeakReference<DeferValue>(v));
-        }
-
-        return v3;
+        return instances.get(new DeferValue(value, defers));
     }
 
     private WriteValue value;

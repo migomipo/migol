@@ -54,8 +54,8 @@ public class MigolParser {
     private int statementcount = 0;
     private int linenum = 0;
 
-
     private class SavedLabel {
+
         private String cLine;
         private int linenum, strpos;
         private LabelValue value;
@@ -70,7 +70,7 @@ public class MigolParser {
         private void resolve(Map<String, Integer> constants) throws MigolParsingException {
             try {
                 value.resolve(constants);
-            } catch(NullPointerException ex){
+            } catch (NullPointerException ex) {
                 throw new MigolParsingException("Undefined label", cLine, linenum, strpos);
             }
         }
@@ -281,8 +281,6 @@ public class MigolParser {
                     throw new MigolParsingException("Unexpected /", cLine,
                             linenum, strpos);
                 }
-            } else if (c == '\"') {
-                parseConstant();
             } else {
                 break;
             }
@@ -305,8 +303,8 @@ public class MigolParser {
                     try {
                         val2 = (ReadValue) val;
                     } catch (ClassCastException ex) {
-                        throw new MigolParsingException("Write-only value used in " +
-                                "reading position", cLine, linenum, startpos);
+                        throw new MigolParsingException("Write-only value used in "
+                                + "reading position", cLine, linenum, startpos);
                     }
 
                     nextChar();
@@ -316,7 +314,7 @@ public class MigolParser {
                     } else {
                         statement = new ConsoleIOStatement(val2, 0);
                     }
-                } else if(c == '<') {
+                } else if (c == '<') {
                     // Assignment statements!
                     List<AssignmentOperation> ops = new LinkedList<AssignmentOperation>();
                     while (c == '<') {
@@ -324,7 +322,9 @@ public class MigolParser {
                     }
                     statement = new AssignmentStatement(val, ops.toArray(new AssignmentOperation[0]));
 
-                } else throw new MigolParsingException("Incorrect statement", cLine, linenum, strpos);
+                } else {
+                    throw new MigolParsingException("Incorrect statement", cLine, linenum, strpos);
+                }
             }
             if (c == '?') {
                 int condtype = parseConditionalType();
@@ -404,7 +404,7 @@ public class MigolParser {
                 int val = parseIntegerValue();
                 mval = IntegerValue.getInstance(val);
             } else if (c >= 'a' && c <= 'z') {
-                int labelpos = strpos;
+                int labelpos = strpos;                
                 String name = parseName();
                 LabelValue l = labelValues.get(name);
                 if(l == null){
@@ -512,8 +512,8 @@ public class MigolParser {
         try {
             return (ReadValue) parseValue();
         } catch (ClassCastException ex) {
-            throw new MigolParsingException("Write-only value used in " +
-                    "reading position", cLine, linenum, startpos);
+            throw new MigolParsingException("Write-only value used in "
+                    + "reading position", cLine, linenum, startpos);
         }
     }
 
@@ -548,7 +548,7 @@ public class MigolParser {
             nextChar();
             return COND_EQ;
         } else {
-            throw new MigolParsingException("Unknown conditional operator", 
+            throw new MigolParsingException("Unknown conditional operator",
                     cLine, linenum, strpos);
         }
     }
@@ -627,21 +627,6 @@ public class MigolParser {
         }
     }
 
-    private void parseConstant() throws MigolParsingException {
-        assert (c == '"');
-        nextChar();
-        int startstrpos = strpos;
-        String name = parseName();
-        if (c != '=') {
-            throw new MigolParsingException(
-                    "Unexpected character",
-                    cLine, linenum, strpos);
-        }
-        nextChar();
-        int value = parseIntegerValue();
-        addConstant(name, value, startstrpos);
-        checkFollowingChar();
-    }
 
     private void checkFollowingChar() throws MigolParsingException {
         if (!(endOfLine || isBlank(c) || c == '/' || c == ',')) {
