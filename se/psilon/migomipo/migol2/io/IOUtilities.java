@@ -27,6 +27,9 @@ public class IOUtilities {
             session.addIOFunction(20, file.getOpenFileFunc());
             session.addIOFunction(30, soc.getOpenSocketFunc());
             session.addIOFunction(34, soc.getResolveDNSFunc());
+            InterruptTimer time = new InterruptTimer();
+            session.addIOFunction(70, time.getCurrentTimeFunction());
+            session.addIOFunction(71, time.getScheduleInterruptFunction());
     }
     
             

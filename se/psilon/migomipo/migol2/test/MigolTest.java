@@ -15,7 +15,7 @@ public class MigolTest {
 
     public static void main(String[] args) throws MigolExecutionException, IOException, MigolParsingException {
 
-        MigolParsedProgram prog = MigolParser.parseFile("E:\\hg\\migol\\sockettest.mgl");
+        MigolParsedProgram prog = MigolParser.parseFile("E:\\hg\\migol\\timertest.mgl");
         MigolExecutionSession session = new MigolExecutionSession();
         IOManager io = new IOManager();
         FileOperationManager file = new FileOperationManager(io);
@@ -26,7 +26,9 @@ public class MigolTest {
         session.addIOFunction(20, file.getOpenFileFunc());
         session.addIOFunction(30, soc.getOpenSocketFunc());
         session.addIOFunction(34, soc.getResolveDNSFunc());
-
+        InterruptTimer t = new InterruptTimer();
+        session.addIOFunction(70, t.getCurrentTimeFunction());
+        session.addIOFunction(71, t.getScheduleInterruptFunction());
         session.executeProgram(prog);
         io.close();
 
