@@ -26,6 +26,7 @@ public class IOUtilities {
             session.addIOFunction(12, io.getCloseStreamFunction());
             session.addIOFunction(20, file.getOpenFileFunc());
             session.addIOFunction(30, soc.getOpenSocketFunc());
+            session.addIOFunction(34, soc.getResolveDNSFunc());
     }
     
             

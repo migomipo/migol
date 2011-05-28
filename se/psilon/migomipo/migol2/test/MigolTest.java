@@ -14,8 +14,8 @@ import se.psilon.migomipo.migol2.parse.MigolParsingException;
 public class MigolTest {
 
     public static void main(String[] args) throws MigolExecutionException, IOException, MigolParsingException {
-        System.setIn(new FileInputStream("E:\\hw.malbolge"));
-        MigolParsedProgram prog = MigolParser.parseFile("E:\\malbolge.mgl");
+
+        MigolParsedProgram prog = MigolParser.parseFile("E:\\hg\\migol\\sockettest.mgl");
         MigolExecutionSession session = new MigolExecutionSession();
         IOManager io = new IOManager();
         FileOperationManager file = new FileOperationManager(io);
@@ -25,6 +25,7 @@ public class MigolTest {
         session.addIOFunction(12, io.getCloseStreamFunction());
         session.addIOFunction(20, file.getOpenFileFunc());
         session.addIOFunction(30, soc.getOpenSocketFunc());
+        session.addIOFunction(34, soc.getResolveDNSFunc());
 
         session.executeProgram(prog);
         io.close();
