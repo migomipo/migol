@@ -2,13 +2,13 @@ package se.psilon.migomipo.migol2;
 
 import se.psilon.migomipo.migol2.io.MigolIOFunction;
 
-public class ExecValue implements MigolReference {
+public class ExecReference implements MigolReference {
 
-    private static final ExecValue instance = new ExecValue();
+    private static final ExecReference instance = new ExecReference();
 
-    private ExecValue(){};
+    private ExecReference(){};
 
-    public static ExecValue getInstance() {
+    public static ExecReference getInstance() {
         return instance;
     }
 

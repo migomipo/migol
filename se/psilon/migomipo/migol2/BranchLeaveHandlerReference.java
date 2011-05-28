@@ -1,12 +1,12 @@
 package se.psilon.migomipo.migol2;
 
-public class BranchEnableInterruptValue implements MigolReference {
+public class BranchLeaveHandlerReference implements MigolReference {
 
-    private static final BranchEnableInterruptValue instance = new BranchEnableInterruptValue();
+    private static final BranchLeaveHandlerReference instance = new BranchLeaveHandlerReference();
 
-    private BranchEnableInterruptValue(){}
+    private BranchLeaveHandlerReference(){}
 
-    public static BranchEnableInterruptValue getInstance() {
+    public static BranchLeaveHandlerReference getInstance() {
         return instance;
     }
 

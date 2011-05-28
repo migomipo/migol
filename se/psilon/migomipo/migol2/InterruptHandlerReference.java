@@ -1,13 +1,13 @@
 
 package se.psilon.migomipo.migol2;
 
-public class InterruptHandlerValue implements MigolReference {
+public class InterruptHandlerReference implements MigolReference {
 
-    private static final InterruptHandlerValue instance = new InterruptHandlerValue();
+    private static final InterruptHandlerReference instance = new InterruptHandlerReference();
 
-    private InterruptHandlerValue(){}
+    private InterruptHandlerReference(){}
 
-    public static InterruptHandlerValue getInstance() {
+    public static InterruptHandlerReference getInstance() {
         return instance;
     }
 

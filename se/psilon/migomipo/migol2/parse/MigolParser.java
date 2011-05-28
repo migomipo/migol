@@ -365,36 +365,36 @@ public class MigolParser {
                 nextChar();
                 if (c == '!') {
                     nextChar();
-                    mval = BranchEnableInterruptValue.getInstance();
+                    mval = BranchLeaveHandlerReference.getInstance();
                 } else {
-                    mval = BranchValue.getInstance();
+                    mval = BranchReference.getInstance();
                 }
 
             } else if (c == '@') {
                 nextChar();
-                mval = ConsoleInputValue.getInstance();
+                mval = ConsoleInputReference.getInstance();
             } else if (c == '!') {
                 nextChar();
                 if (c == '#') {
                     nextChar();
-                    mval = InterruptHandlerValue.getInstance();
+                    mval = InterruptHandlerReference.getInstance();
                 } else {
-                    mval = ExecValue.getInstance();
+                    mval = ExecReference.getInstance();
                 }
             } else if (c == '*') {
                 nextChar();
                 if (c == '#') {
                     nextChar();
-                    mval = InterruptReturnAddressValue.getInstance();
+                    mval = InterruptReturnAddressReference.getInstance();
                 } else if (c == '!') {
                     nextChar();
-                    mval = InterruptResultValue.getInstance();
+                    mval = InterruptResultReference.getInstance();
                 } else {
                     throw new MigolParsingException("Unknown value type", cLine, linenum, strpos);
                 }
             } else if (c == '\\') {
                 nextChar();
-                mval = InterruptWaitValue.getInstance();
+                mval = InterruptWaitReference.getInstance();
             } else if (c == '\'') {
                 nextChar();
                 int val = (int) c;

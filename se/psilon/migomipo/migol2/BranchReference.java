@@ -2,13 +2,13 @@
 
 package se.psilon.migomipo.migol2;
 
-public class BranchValue implements MigolReference {
+public class BranchReference implements MigolReference {
 
-    private static final BranchValue instance = new BranchValue();
+    private static final BranchReference instance = new BranchReference();
 
-    private BranchValue(){}
+    private BranchReference(){}
 
-    public static BranchValue getInstance() {
+    public static BranchReference getInstance() {
         return instance;
     }
 

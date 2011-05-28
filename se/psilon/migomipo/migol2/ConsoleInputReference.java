@@ -1,13 +1,13 @@
 package se.psilon.migomipo.migol2;
 
 
-public class ConsoleInputValue implements MigolReference {
+public class ConsoleInputReference implements MigolReference {
 
-    private static final ConsoleInputValue instance = new ConsoleInputValue();
+    private static final ConsoleInputReference instance = new ConsoleInputReference();
 
-    private ConsoleInputValue(){}
+    private ConsoleInputReference(){}
 
-    public static ConsoleInputValue getInstance() {
+    public static ConsoleInputReference getInstance() {
         return instance;
     }
 

@@ -1,13 +1,13 @@
 
 package se.psilon.migomipo.migol2;
 
-public class InterruptReturnAddressValue implements MigolReference {
+public class InterruptReturnAddressReference implements MigolReference {
 
-    private static final InterruptReturnAddressValue instance = new InterruptReturnAddressValue();
+    private static final InterruptReturnAddressReference instance = new InterruptReturnAddressReference();
 
-    private InterruptReturnAddressValue(){}
+    private InterruptReturnAddressReference(){}
 
-    public static InterruptReturnAddressValue getInstance() {
+    public static InterruptReturnAddressReference getInstance() {
         return instance;
     }
 

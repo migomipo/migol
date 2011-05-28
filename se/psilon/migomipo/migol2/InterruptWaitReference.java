@@ -1,13 +1,13 @@
 
 package se.psilon.migomipo.migol2;
 
-public class InterruptWaitValue implements MigolReference {
+public class InterruptWaitReference implements MigolReference {
 
-    private static final InterruptWaitValue instance = new InterruptWaitValue();
+    private static final InterruptWaitReference instance = new InterruptWaitReference();
 
-    private InterruptWaitValue(){}
+    private InterruptWaitReference(){}
 
-    public static InterruptWaitValue getInstance() {
+    public static InterruptWaitReference getInstance() {
         return instance;
     }
 
