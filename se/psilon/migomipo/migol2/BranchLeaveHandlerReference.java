@@ -11,7 +11,7 @@ public class BranchLeaveHandlerReference implements MigolReference {
     }
 
     public int defer(MigolExecutionSession session) throws MigolExecutionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return session.getPP();
     }
 
     public void set(MigolExecutionSession session, int val) throws MigolExecutionException {
