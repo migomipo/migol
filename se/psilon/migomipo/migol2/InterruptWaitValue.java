@@ -1,7 +1,7 @@
 
 package se.psilon.migomipo.migol2;
 
-public class InterruptWaitValue implements WriteValue {
+public class InterruptWaitValue implements MigolReference {
 
     private static final InterruptWaitValue instance = new InterruptWaitValue();
 

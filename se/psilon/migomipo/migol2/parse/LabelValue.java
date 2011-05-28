@@ -2,11 +2,11 @@ package se.psilon.migomipo.migol2.parse;
 
 import java.util.Map;
 import se.psilon.migomipo.migol2.IntegerValue;
-import se.psilon.migomipo.migol2.ReadValue;
+import se.psilon.migomipo.migol2.MigolValue;
 import se.psilon.migomipo.migol2.MigolExecutionException;
 import se.psilon.migomipo.migol2.MigolExecutionSession;
 
-class LabelValue implements ReadValue{
+class LabelValue implements MigolValue{
     private String label;
     private IntegerValue value = null;
 

@@ -1,7 +1,7 @@
 package se.psilon.migomipo.migol2;
 
 
-public class ConsoleInputValue implements WriteValue {
+public class ConsoleInputValue implements MigolReference {
 
     private static final ConsoleInputValue instance = new ConsoleInputValue();
 

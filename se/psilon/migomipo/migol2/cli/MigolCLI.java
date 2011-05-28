@@ -44,7 +44,7 @@ import se.psilon.migomipo.migol2.io.SocketManager;
  */
 public class MigolCLI {
 
-    private static final String VERSION = "11.0.4";
+    private static final String VERSION = "11.0.5";
     private static final String VERSIONINFO =
             "MigoMipo Migol 11 interpreter version " + VERSION + "\n" +
             "\u00A9 2009-2011 John Eriksson";

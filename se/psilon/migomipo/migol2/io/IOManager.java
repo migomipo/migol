@@ -205,6 +205,10 @@ public class IOManager {
     public MigolIOFunction getWriteStreamFunction() {
         return writeStreamFunction;
     }
+    
+    public Map<Integer, ByteChannel> getChannelMap(){
+        return map;
+    }
 
 
     // May be temporary, multithreading and streams isn't the most efficient

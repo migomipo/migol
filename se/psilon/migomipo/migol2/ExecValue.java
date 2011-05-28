@@ -2,7 +2,7 @@ package se.psilon.migomipo.migol2;
 
 import se.psilon.migomipo.migol2.io.MigolIOFunction;
 
-public class ExecValue implements WriteValue {
+public class ExecValue implements MigolReference {
 
     private static final ExecValue instance = new ExecValue();
 

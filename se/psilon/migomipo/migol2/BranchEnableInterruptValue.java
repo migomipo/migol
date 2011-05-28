@@ -1,6 +1,6 @@
 package se.psilon.migomipo.migol2;
 
-public class BranchEnableInterruptValue implements WriteValue {
+public class BranchEnableInterruptValue implements MigolReference {
 
     private static final BranchEnableInterruptValue instance = new BranchEnableInterruptValue();
 

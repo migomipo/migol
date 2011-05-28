@@ -14,8 +14,8 @@ import se.psilon.migomipo.migol2.parse.MigolParsingException;
 public class MigolTest {
 
     public static void main(String[] args) throws MigolExecutionException, IOException, MigolParsingException {
-
-        MigolParsedProgram prog = MigolParser.parseFile("E:\\hg\\migol\\switest.mgl");
+        System.setIn(new FileInputStream("E:\\hw.malbolge"));
+        MigolParsedProgram prog = MigolParser.parseFile("E:\\malbolge.mgl");
         MigolExecutionSession session = new MigolExecutionSession();
         IOManager io = new IOManager();
         FileOperationManager file = new FileOperationManager(io);

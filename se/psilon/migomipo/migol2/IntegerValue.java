@@ -38,7 +38,7 @@ import java.lang.ref.*;
  * use to address memory.
  * @author John Eriksson
  */
-public class IntegerValue implements java.io.Serializable, ReadValue {
+public class IntegerValue implements java.io.Serializable, MigolValue {
 
     private static final Map<Integer, WeakReference<IntegerValue>> instances =
             new HashMap<Integer, WeakReference<IntegerValue>>();

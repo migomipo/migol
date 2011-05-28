@@ -236,6 +236,10 @@ public class MigolExecutionSession {
     public MigolIOFunction getIOFunction(int i) {
         return ioFunctions.get(i);
     }
+    
+    public Map<Integer, MigolIOFunction> getIOFunctionMap(){
+        return ioFunctions;
+    }
 
     /*
      BRANCH    # 

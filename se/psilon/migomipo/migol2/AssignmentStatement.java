@@ -53,7 +53,7 @@ public class AssignmentStatement implements MigolStatement {
     /**
      * The target address.
      */
-    private WriteValue target;
+    private MigolReference target;
     /**
      * The assignment operators.
      */
@@ -65,7 +65,7 @@ public class AssignmentStatement implements MigolStatement {
      * @param target    The target address.
      * @param operation The set of operations to be performed on the target address.
      */
-    public AssignmentStatement(WriteValue target, AssignmentOperation[] operation) {
+    public AssignmentStatement(MigolReference target, AssignmentOperation[] operation) {
         this.target = target;
         this.operations = operation;
     }
@@ -127,4 +127,13 @@ public class AssignmentStatement implements MigolStatement {
         hash = 37 * hash + (this.operations != null ? this.operations.hashCode() : 0);
         return hash;
     }
+
+    public AssignmentOperation[] getOperations() {
+        return operations;
+    }
+
+    public MigolReference getTarget() {
+        return target;
+    }
+       
 }

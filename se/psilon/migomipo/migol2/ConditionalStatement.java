@@ -76,14 +76,14 @@ public class ConditionalStatement implements MigolStatement {
     private static final long serialVersionUID = -4829698528440668056L;
     private final MigolStatement statement;
     private final int condtype;
-    private final ReadValue value;
+    private final MigolValue value;
     /**
      * Constructs a new conditional statement.
      * @param statement     The statement to be executed if the
      * conditional operation evaluates to true.
      * @param cond          The conditional operation.
      */
-    public ConditionalStatement(MigolStatement statement, int condtype, ReadValue value) {
+    public ConditionalStatement(MigolStatement statement, int condtype, MigolValue value) {
         this.condtype = condtype;
         this.value = value;
         this.statement = statement;
@@ -156,8 +156,19 @@ public class ConditionalStatement implements MigolStatement {
         hash = 43 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }
-    
-    
 
+    public int getCondtype() {
+        return condtype;
+    }
+
+    public MigolStatement getStatement() {
+        return statement;
+    }
+
+    public MigolValue getValue() {
+        return value;
+    }
+    
+    
 
 }

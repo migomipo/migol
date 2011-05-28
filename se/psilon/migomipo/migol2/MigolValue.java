@@ -1,7 +1,7 @@
 package se.psilon.migomipo.migol2;
 
 
-public interface ReadValue extends WriteValue {
+public interface MigolValue extends MigolReference {
     public int get(MigolExecutionSession session) throws MigolExecutionException;
 
 }

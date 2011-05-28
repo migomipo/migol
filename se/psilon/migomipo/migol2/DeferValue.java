@@ -5,18 +5,18 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class DeferValue implements ReadValue {
+public class DeferValue implements MigolValue {
 
     private static final FlyweightStore<DeferValue> instances = new FlyweightStore<DeferValue>();
 
-    public static DeferValue getInstance(WriteValue value, int defers){
+    public static DeferValue getInstance(MigolReference value, int defers){
         return instances.get(new DeferValue(value, defers));
     }
 
-    private WriteValue value;
+    private MigolReference value;
     private int defers;
 
-    private DeferValue(WriteValue value, int defers) {
+    private DeferValue(MigolReference value, int defers) {
 
         if(defers < 1){
             throw new IllegalArgumentException();

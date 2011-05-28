@@ -290,7 +290,7 @@ public class MigolParser {
     private MigolStatement parseStatement() throws MigolParsingException {
         try {
 
-            WriteValue val;
+            MigolReference val;
             MigolStatement statement = null;
             if (c == '_') {
                 nextChar();
@@ -299,9 +299,9 @@ public class MigolParser {
                 int startpos = strpos;
                 val = parseValue();
                 if (c == '>') {
-                    ReadValue val2;
+                    MigolValue val2;
                     try {
-                        val2 = (ReadValue) val;
+                        val2 = (MigolValue) val;
                     } catch (ClassCastException ex) {
                         throw new MigolParsingException("Write-only value used in "
                                 + "reading position", cLine, linenum, startpos);
@@ -310,9 +310,9 @@ public class MigolParser {
                     nextChar();
                     if (c == '-') {
                         nextChar();
-                        statement = new ConsoleIOStatement(val2, 1);
+                        statement = new ConsoleIOStatement(val2, ConsoleIOStatement.INT);
                     } else {
-                        statement = new ConsoleIOStatement(val2, 0);
+                        statement = new ConsoleIOStatement(val2, ConsoleIOStatement.ASCII);
                     }
                 } else if (c == '<') {
                     // Assignment statements!
@@ -328,7 +328,7 @@ public class MigolParser {
             }
             if (c == '?') {
                 int condtype = parseConditionalType();
-                ReadValue condvalue = parseReadValue();
+                MigolValue condvalue = parseReadValue();
                 statement = new ConditionalStatement(statement, condtype, condvalue);
             }
             if (c == ':') {
@@ -346,7 +346,7 @@ public class MigolParser {
         }
     }
 
-    private WriteValue parseValue() throws MigolParsingException {
+    private MigolReference parseValue() throws MigolParsingException {
         int defers = 0; // The number of defers.
 
         try {
@@ -360,7 +360,7 @@ public class MigolParser {
                     break;
                 }
             }
-            WriteValue mval;
+            MigolReference mval;
             if (c == '#') {
                 nextChar();
                 if (c == '!') {
@@ -444,62 +444,62 @@ public class MigolParser {
             char opc = c;
             nextChar();
             if (opc == '+') {
-                return new AssignmentOperation(OP_PLUS, parseReadValue());
+                return AssignmentOperation.getInstance(OP_PLUS, parseReadValue());
             } else if (opc == '-') {
-                return new AssignmentOperation(OP_MINUS, parseReadValue());
+                return AssignmentOperation.getInstance(OP_MINUS, parseReadValue());
             } else if (opc == '*') {
-                return new AssignmentOperation(OP_MUL, parseReadValue());
+                return AssignmentOperation.getInstance(OP_MUL, parseReadValue());
             } else if (opc == '/') {
-                return new AssignmentOperation(OP_DIVIDE, parseReadValue());
+                return AssignmentOperation.getInstance(OP_DIVIDE, parseReadValue());
             } else if (opc == '%') {
-                return new AssignmentOperation(OP_MOD, parseReadValue());
+                return AssignmentOperation.getInstance(OP_MOD, parseReadValue());
             } else if (opc == '^') {
-                return new AssignmentOperation(OP_XOR, parseReadValue());
+                return AssignmentOperation.getInstance(OP_XOR, parseReadValue());
             } else if (opc == '&') {
-                return new AssignmentOperation(OP_AND, parseReadValue());
+                return AssignmentOperation.getInstance(OP_AND, parseReadValue());
             } else if (opc == '|') {
-                return new AssignmentOperation(OP_OR, parseReadValue());
+                return AssignmentOperation.getInstance(OP_OR, parseReadValue());
             } else if (opc == '=') {
-                return new AssignmentOperation(OP_EQ, parseReadValue());
+                return AssignmentOperation.getInstance(OP_EQ, parseReadValue());
             } else if (opc == '<') {
                 if (c == '<') {
                     nextChar();
                     if (c == '_') {
                         nextChar();
-                        return new AssignmentOperation(OP_LRO, parseReadValue());
+                        return AssignmentOperation.getInstance(OP_LRO, parseReadValue());
                     } else {
-                        return new AssignmentOperation(OP_LSH, parseReadValue());
+                        return AssignmentOperation.getInstance(OP_LSH, parseReadValue());
                     }
                 } else if (c == '=') {
                     nextChar();
-                    return new AssignmentOperation(OP_LTEQ, parseReadValue());
+                    return AssignmentOperation.getInstance(OP_LTEQ, parseReadValue());
                 } else if (c == '>') {
                     nextChar();
-                    return new AssignmentOperation(OP_NEQ, parseReadValue());
+                    return AssignmentOperation.getInstance(OP_NEQ, parseReadValue());
                 } else {
-                    return new AssignmentOperation(OP_LT, parseReadValue());
+                    return AssignmentOperation.getInstance(OP_LT, parseReadValue());
                 }
             } else if (opc == '>') {
                 if (c == '>') {
                     nextChar();
                     if (c == '>') {
                         nextChar();
-                        return new AssignmentOperation(OP_RSHL, parseReadValue());
+                        return AssignmentOperation.getInstance(OP_RSHL, parseReadValue());
                     } else if (c == '_') {
                         nextChar();
-                        return new AssignmentOperation(OP_RRO, parseReadValue());
+                        return AssignmentOperation.getInstance(OP_RRO, parseReadValue());
                     } else {
-                        return new AssignmentOperation(OP_RSHA, parseReadValue());
+                        return AssignmentOperation.getInstance(OP_RSHA, parseReadValue());
                     }
                 } else if (c == '=') {
                     nextChar();
-                    return new AssignmentOperation(OP_GTEQ, parseReadValue());
+                    return AssignmentOperation.getInstance(OP_GTEQ, parseReadValue());
                 } else {
-                    return new AssignmentOperation(OP_GT, parseReadValue());
+                    return AssignmentOperation.getInstance(OP_GT, parseReadValue());
                 }
             }
         } else {
-            return new AssignmentOperation(OP_ASSIGN, parseReadValue());
+            return AssignmentOperation.getInstance(OP_ASSIGN, parseReadValue());
         }
         throw new MigolParsingException("Unknown assignment operator", cLine,
                 linenum, strpos - 1);
@@ -507,10 +507,10 @@ public class MigolParser {
 
     }
 
-    private ReadValue parseReadValue() throws MigolParsingException {
+    private MigolValue parseReadValue() throws MigolParsingException {
         int startpos = strpos;
         try {
-            return (ReadValue) parseValue();
+            return (MigolValue) parseValue();
         } catch (ClassCastException ex) {
             throw new MigolParsingException("Write-only value used in "
                     + "reading position", cLine, linenum, startpos);

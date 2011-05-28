@@ -36,6 +36,13 @@ import java.io.Serializable;
  * @see AssignmentStatement
  */
 public class AssignmentOperation implements Serializable {
+    
+    private static final FlyweightStore<AssignmentOperation> instances = 
+            new FlyweightStore<AssignmentOperation>();
+    
+    public static AssignmentOperation getInstance(int operation, MigolValue val){
+        return instances.get(new AssignmentOperation(operation, val));
+    }
 
     /**
      * Constant representing an absolute assignment operation.
@@ -117,9 +124,9 @@ public class AssignmentOperation implements Serializable {
     public static final int OP_GTEQ = 20;
     
     private final int operation;
-    private final ReadValue value;
+    private final MigolValue value;
 
-    public AssignmentOperation(int operation, ReadValue val) {
+    private AssignmentOperation(int operation, MigolValue val) {
         this.operation = operation;
         this.value = val;
     }
@@ -132,7 +139,7 @@ public class AssignmentOperation implements Serializable {
      * @throws se.psilon.migomipo.migol2.execute.MigolExecutionException
      * If an error occurs during the operation.
      */
-    public void operation(MigolExecutionSession session, WriteValue target) throws MigolExecutionException {
+    public void operation(MigolExecutionSession session, MigolReference target) throws MigolExecutionException {
         int result;
         if (operation == OP_ASSIGN) {
             result = value.get(session);
@@ -216,5 +223,43 @@ public class AssignmentOperation implements Serializable {
         shift &= 31;
         return (value >>> shift) | (value << (32 - shift));
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AssignmentOperation other = (AssignmentOperation) obj;
+        if (this.operation != other.operation) {
+            return false;
+        }
+        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + this.operation;
+        hash = 97 * hash + (this.value != null ? this.value.hashCode() : 0);
+        return hash;
+    }
+
+    public int getOperation() {
+        return operation;
+    }
+
+    public MigolValue getValue() {
+        return value;
+    }
+    
+    
+    
+    
 
 }

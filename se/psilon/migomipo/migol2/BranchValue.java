@@ -2,7 +2,7 @@
 
 package se.psilon.migomipo.migol2;
 
-public class BranchValue implements WriteValue {
+public class BranchValue implements MigolReference {
 
     private static final BranchValue instance = new BranchValue();
 
