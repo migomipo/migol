@@ -1,7 +1,9 @@
 package se.psilon.migomipo.migol2.test;
 
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import se.psilon.migomipo.migol2.MigolParsedProgram;
 import se.psilon.migomipo.migol2.MigolExecutionException;
 import se.psilon.migomipo.migol2.MigolExecutionSession;

@@ -56,6 +56,8 @@ public class FileOperationManager {
                 error = 1;
             } catch (IllegalArgumentException ex) {
                 error = 2;
+            } catch(NegativeArraySizeException ex){
+                error = 3;
             }
             mem[structPos + 4] = error;
             mem[structPos + 5] = handle;

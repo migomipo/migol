@@ -59,7 +59,7 @@ public class SocketManager {
             } catch (IOException ex) {
                 error = 1;                
             } catch (IllegalArgumentException ex){
-                error = 2;
+                error = 3;
             }
             mem[structPos + 4] = error;
             mem[structPos + 5] = handle;

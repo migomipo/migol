@@ -78,6 +78,8 @@ public class IOManager {
                 error = 1;
             } catch (NullPointerException ex) {                
                 error = 2;
+            } catch(IllegalArgumentException ex){
+                error = 3;
             }
             mem[structPos + 4] = error;
             mem[structPos + 5] = bytes;
@@ -125,7 +127,10 @@ public class IOManager {
 
             } catch (NullPointerException ex) {
                 error = 2;
+            } catch(IllegalArgumentException ex){
+                error = 3;
             }
+            
             mem[structPos + 4] = error;
             mem[structPos + 5] = bytes;
             session.getResultQueue().add(structPos);
