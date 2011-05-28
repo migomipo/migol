@@ -33,15 +33,7 @@ import se.psilon.migomipo.migol2.io.IOManager;
 import se.psilon.migomipo.migol2.io.IOUtilities;
 import se.psilon.migomipo.migol2.io.SocketManager;
 
-/**
- * The command line interface for Migol 09 2.3.
- *
- * The program reads a file, parses and executes it.
- * @see se.psilon.migomipo.migol2.parse.MigolParser
- * @see se.psilon.migomipo.migol2.MigolParsedProgram
- * @see se.psilon.migomipo.migol2.execute.MigolExecutionSession
- * @author John Eriksson
- */
+
 public class MigolCLI {
 
     private static final String VERSION = "11.0.6";
