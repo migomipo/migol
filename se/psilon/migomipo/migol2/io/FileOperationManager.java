@@ -3,7 +3,7 @@ package se.psilon.migomipo.migol2.io;
 import se.psilon.migomipo.migol2.MigolExecutionSession;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
+import java.nio.channels.*;
 
 public class FileOperationManager {
 
@@ -19,7 +19,6 @@ public class FileOperationManager {
         // structpos + 1: file name position
         // structpos + 2: file name length
         // structpos + 3: mode
-
         private MigolExecutionSession session;
         private int structPos;
 
@@ -56,7 +55,7 @@ public class FileOperationManager {
                 error = 1;
             } catch (IllegalArgumentException ex) {
                 error = 2;
-            } catch(NegativeArraySizeException ex){
+            } catch (NegativeArraySizeException ex) {
                 error = 3;
             }
             mem[structPos + 4] = error;
@@ -65,10 +64,136 @@ public class FileOperationManager {
         }
     }
 
+    private class FileTellRequest implements Runnable {
+
+        private MigolExecutionSession session;
+        private int structPos;
+
+        public FileTellRequest(MigolExecutionSession session, int structPos) {
+            this.session = session;
+            this.structPos = structPos;
+        }
+
+        // structPos : function ID
+        // structPos + 1: file handle
+        // structPos + 2: error num
+        // structPos + 3: file position
+        public void run() {
+            int error = 0;
+            int fileposition = -1;
+            int[] mem = session.getMemory();
+            try {
+                ByteChannel bc = io.getChannel(mem[structPos + 1]);
+                FileChannel fc = (FileChannel) bc;
+                fileposition = (int) fc.position();
+
+            } catch (ClassCastException ex) {
+                error = 4;
+            } catch (IOException ex) {
+                error = 1;
+            } catch (NullPointerException ex) {
+                error = 2;
+            }
+            mem[structPos + 2] = error;
+            mem[structPos + 3] = fileposition;
+            session.getResultQueue().add(structPos);
+
+        }
+    }
+
+    private class FileSeekRequest implements Runnable {
+
+        private MigolExecutionSession session;
+        private int structPos;
+
+        public FileSeekRequest(MigolExecutionSession session, int structPos) {
+            this.session = session;
+            this.structPos = structPos;
+        }
+
+        // structPos : function ID
+        // structPos + 1: file handle
+        // structPos + 2: new position
+        // structPos + 3: error num    
+        public void run() {
+            int error = 0;
+            int[] mem = session.getMemory();
+            try {
+                ByteChannel bc = io.getChannel(mem[structPos + 1]);
+                FileChannel fc = (FileChannel) bc;
+                fc.position(mem[structPos + 2]);
+
+            } catch (ClassCastException ex) {
+                error = 4;
+            } catch (IOException ex) {
+                error = 1;
+            } catch (NullPointerException ex) {
+                error = 2;
+            }
+            mem[structPos + 3] = error;
+            session.getResultQueue().add(structPos);
+
+        }
+    }
+
+    private class FileSizeRequest implements Runnable {
+
+        private MigolExecutionSession session;
+        private int structPos;
+
+        public FileSizeRequest(MigolExecutionSession session, int structPos) {
+            this.session = session;
+            this.structPos = structPos;
+        }
+
+        // structPos : function ID
+        // structPos + 1: file handle
+        // structPos + 2: error num
+        // structPos + 3: file size    
+        public void run() {
+            int error = 0;
+            int size = -1;
+            int[] mem = session.getMemory();
+            try {
+                ByteChannel bc = io.getChannel(mem[structPos + 1]);
+                FileChannel fc = (FileChannel) bc;
+                size = (int) fc.size();
+
+            } catch (ClassCastException ex) {
+                error = 4;
+            } catch (IOException ex) {
+                error = 1;
+            } catch (NullPointerException ex) {
+                error = 2;
+            }
+            mem[structPos + 2] = error;
+            mem[structPos + 3] = size;
+            session.getResultQueue().add(structPos);
+
+        }
+    }
     private MigolIOFunction openFileFunc = new MigolIOFunction() {
 
         public void executeIO(MigolExecutionSession session, int structPos) {
             io.submit(new FileOpenRequest(session, structPos));
+        }
+    };
+    private MigolIOFunction fileTellFunc = new MigolIOFunction() {
+
+        public void executeIO(MigolExecutionSession session, int structPos) {
+            io.submit(new FileTellRequest(session, structPos));
+        }
+    };
+    private MigolIOFunction fileSeekFunc = new MigolIOFunction() {
+
+        public void executeIO(MigolExecutionSession session, int structPos) {
+            io.submit(new FileSeekRequest(session, structPos));
+        }
+    };
+    private MigolIOFunction fileSizeFunc = new MigolIOFunction() {
+
+        public void executeIO(MigolExecutionSession session, int structPos) {
+            io.submit(new FileSizeRequest(session, structPos));
         }
     };
 
@@ -76,5 +201,17 @@ public class FileOperationManager {
         return openFileFunc;
     }
 
+    public MigolIOFunction getFileSeekFunc() {
+        return fileSeekFunc;
+    }
 
+    public MigolIOFunction getFileTellFunc() {
+        return fileTellFunc;
+    }
+
+    public MigolIOFunction getFileSizeFunc() {
+        return fileSizeFunc;
+    }
+    
+    
 }
