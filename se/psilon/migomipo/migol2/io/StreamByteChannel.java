@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package se.psilon.migomipo.migol2.io;
 
 import java.nio.ByteBuffer;
@@ -10,10 +7,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-/**
- *
- * @author John
- */
 public class StreamByteChannel implements java.nio.channels.ByteChannel {
 
     private ReadableByteChannel in;

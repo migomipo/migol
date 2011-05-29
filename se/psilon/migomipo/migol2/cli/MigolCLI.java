@@ -28,15 +28,13 @@ package se.psilon.migomipo.migol2.cli;
 import se.psilon.migomipo.migol2.*;
 import se.psilon.migomipo.migol2.parse.*;
 import java.io.*;
-import se.psilon.migomipo.migol2.io.FileOperationManager;
 import se.psilon.migomipo.migol2.io.IOManager;
 import se.psilon.migomipo.migol2.io.IOUtilities;
-import se.psilon.migomipo.migol2.io.SocketManager;
 
 
 public class MigolCLI {
 
-    private static final String VERSION = "11.0.8";
+    private static final String VERSION = "11.0.9";
     private static final String VERSIONINFO =
             "MigoMipo Migol 11 interpreter version " + VERSION + "\n" +
             "\u00A9 2009-2011 John Eriksson";

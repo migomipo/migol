@@ -112,7 +112,7 @@ public class SocketManager {
                 error = 1;
             }
             mem[structPos + 4] = error;
-            mem[structPos + 5] = error;
+            mem[structPos + 5] = mode;
             session.getResultQueue().add(structPos);
             
         }
