@@ -49,7 +49,7 @@ public class FileOperationManager {
                     throw new IllegalArgumentException();
                 }
                 FileChannel f = new RandomAccessFile(new String(bytes, "utf-8"), mode).getChannel();
-                handle = io.addChannel(f);
+                handle = io.addObject(f);
 
             } catch (IOException ex) {
                 error = 1;
@@ -83,8 +83,7 @@ public class FileOperationManager {
             int fileposition = -1;
             int[] mem = session.getMemory();
             try {
-                ByteChannel bc = io.getChannel(mem[structPos + 1]);
-                FileChannel fc = (FileChannel) bc;
+                FileChannel fc = (FileChannel) io.getObject(mem[structPos + 1]);
                 fileposition = (int) fc.position();
 
             } catch (ClassCastException ex) {
@@ -119,8 +118,7 @@ public class FileOperationManager {
             int error = 0;
             int[] mem = session.getMemory();
             try {
-                ByteChannel bc = io.getChannel(mem[structPos + 1]);
-                FileChannel fc = (FileChannel) bc;
+                FileChannel fc = (FileChannel) io.getObject(mem[structPos + 1]);
                 fc.position(mem[structPos + 2]);
 
             } catch (ClassCastException ex) {
@@ -155,8 +153,7 @@ public class FileOperationManager {
             int size = -1;
             int[] mem = session.getMemory();
             try {
-                ByteChannel bc = io.getChannel(mem[structPos + 1]);
-                FileChannel fc = (FileChannel) bc;
+                FileChannel fc = (FileChannel) io.getObject(mem[structPos + 1]);
                 size = (int) fc.size();
 
             } catch (ClassCastException ex) {

@@ -11,7 +11,7 @@ public class IOManager {
 
     private int allocFd = 20;
     private ExecutorService threadPool;
-    private Map<Integer, ByteChannel> map = new ConcurrentHashMap<Integer, ByteChannel>();
+    private Map<Integer, Object> map = new ConcurrentHashMap<Integer, Object>();
 
     public IOManager() {
         threadPool = Executors.newCachedThreadPool();
@@ -25,9 +25,9 @@ public class IOManager {
         threadPool.shutdown();
     }
 
-    public int addChannel(ByteChannel f) {
+    public int addObject(Object o) {
         int fd = allocFd++;
-        map.put(fd, f);
+        map.put(fd, o);
         return fd;
     }
 
@@ -61,7 +61,7 @@ public class IOManager {
             int bytes = -1;
             int[] mem = session.getMemory();
             try {
-                ByteChannel channel = map.get(mem[structPos + 1]);
+                ByteChannel channel = (ByteChannel) map.get(mem[structPos + 1]);
 
                 if (channel == null) {
                     throw new NullPointerException();
@@ -80,6 +80,8 @@ public class IOManager {
                 error = 2;
             } catch(IllegalArgumentException ex){
                 error = 3;
+            } catch(ClassCastException ex){
+                error = 4;
             }
             mem[structPos + 4] = error;
             mem[structPos + 5] = bytes;
@@ -109,7 +111,7 @@ public class IOManager {
             int error = 0;
             int[] mem = session.getMemory();
             try {
-                ByteChannel channel = map.get(mem[structPos + 1]);
+                ByteChannel channel = (ByteChannel) map.get(mem[structPos + 1]);
                 if (channel == null) {
                     throw new NullPointerException();
                 }
@@ -129,6 +131,8 @@ public class IOManager {
                 error = 2;
             } catch(IllegalArgumentException ex){
                 error = 3;
+            } catch(ClassCastException ex){
+                error = 4;
             }
             
             mem[structPos + 4] = error;
@@ -155,7 +159,7 @@ public class IOManager {
             int error = 0;
             int[] mem = session.getMemory();
             try {
-                ByteChannel channel = map.get(mem[structPos + 1]);
+                ByteChannel channel = (ByteChannel) map.get(mem[structPos + 1]);
                 if (channel == null) {
                     throw new NullPointerException();
                 }
@@ -164,6 +168,8 @@ public class IOManager {
                 error = 1;
             } catch (NullPointerException ex) {
                 error = 2;
+            } catch(ClassCastException ex){
+                error = 4;
             }
             mem[structPos + 2] = error;
             session.getResultQueue().add(structPos);
@@ -171,8 +177,9 @@ public class IOManager {
         }
     }
 
-    public ByteChannel getChannel(int i) {
-        return map.get(i);
+    public Object getObject(int i) {
+       return map.get(i);
+        
     }
     
     private MigolIOFunction readStreamFunction = new MigolIOFunction() {
@@ -206,7 +213,7 @@ public class IOManager {
         return writeStreamFunction;
     }
     
-    public Map<Integer, ByteChannel> getChannelMap(){
+    public Map<Integer, Object> getObjectMap(){
         return map;
     }
 

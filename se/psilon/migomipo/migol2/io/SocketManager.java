@@ -2,6 +2,7 @@ package se.psilon.migomipo.migol2.io;
 
 import java.io.*;
 import java.net.*;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import se.psilon.migomipo.migol2.MigolExecutionSession;
 
@@ -54,7 +55,7 @@ public class SocketManager {
                     throw new IllegalArgumentException();
                 }
                 SocketChannel ch = SocketChannel.open(new InetSocketAddress(InetAddress.getByAddress(ip), port));
-                handle = io.addChannel(ch);
+                handle = io.addObject(ch);
                 
             } catch (IOException ex) {
                 error = 1;                
@@ -67,7 +68,7 @@ public class SocketManager {
         }
         
     }
-    
+        
     private class ResolveDNSRequest implements Runnable {
         
         // structpos: function ID
@@ -115,6 +116,81 @@ public class SocketManager {
             mem[structPos + 5] = mode;
             session.getResultQueue().add(structPos);
             
+        }    
+    }
+    
+    private class CreateServerSocketRequest implements Runnable {
+        
+        // structPos: function ID
+        // structPos + 1: port
+        // structPos + 2: error
+        // structPos + 3: server socket handle
+
+        private final int structPos;
+        private final MigolExecutionSession session;
+
+        private CreateServerSocketRequest(MigolExecutionSession session, int structPos) {
+            this.structPos = structPos;
+            this.session = session;
+        }
+        
+        public void run() {
+            int[] mem = session.getMemory();
+            int error = 0;
+            int handle = -1;
+            try {
+                ServerSocketChannel server = ServerSocketChannel.open();
+                server.socket().bind(new InetSocketAddress(mem[structPos + 1]));
+                handle = io.addObject(server);
+            } catch(IOException ex){
+                error = 1;
+            } catch(NullPointerException ex){
+                error = 2;
+            } catch(IllegalArgumentException ex){
+                error = 3;
+            }
+            mem[structPos + 2] = error;
+            mem[structPos + 3] = handle;
+            session.getResultQueue().add(structPos);
+            
+        }
+    
+    }
+    
+    private class ListenServerSocketRequest implements Runnable {
+
+        // structPos: function ID
+        // structPos + 1: server socket handle
+        // structPos + 2: error
+        // structPos + 3: stream handle
+
+        private final int structPos;
+        private final MigolExecutionSession session;
+
+        private ListenServerSocketRequest(MigolExecutionSession session, int structPos) {
+            this.structPos = structPos;
+            this.session = session;
+        }
+        
+        public void run() {
+            int error = 0;
+            int handle = -1;
+            int[] mem = session.getMemory();
+            
+            try {
+                ServerSocketChannel sschannel = (ServerSocketChannel) io.getObject(mem[structPos + 1]);
+                SocketChannel channel = sschannel.accept();               
+                handle = io.addObject(channel);
+            } catch(IOException ex){
+                error = 1;
+            } catch(NullPointerException ex){
+                error = 2;
+            } catch(ClassCastException ex){
+                error = 4;
+            }
+            mem[structPos + 2] = error;
+            mem[structPos + 3] = handle;
+            session.getResultQueue().add(structPos);
         }
     
     }
@@ -132,6 +208,20 @@ public class SocketManager {
             io.submit(new ResolveDNSRequest(session, structPos));
         }
     };
+    
+    private MigolIOFunction createServerSocketFunc = new MigolIOFunction() {
+
+        public void executeIO(MigolExecutionSession session, int structPos) {
+            io.submit(new CreateServerSocketRequest(session, structPos));
+        }
+    };
+    
+    private MigolIOFunction listenServerSocketFunc = new MigolIOFunction() {
+
+        public void executeIO(MigolExecutionSession session, int structPos) {
+            io.submit(new ListenServerSocketRequest(session, structPos));
+        }
+    };
 
     public MigolIOFunction getOpenSocketFunc() {
         return openSocketFunc;
@@ -140,5 +230,13 @@ public class SocketManager {
     public MigolIOFunction getResolveDNSFunc() {
         return resolveDNSFunc;
     }
-   
+
+    public MigolIOFunction getCreateServerSocketFunc() {
+        return createServerSocketFunc;
+    }
+
+    public MigolIOFunction getListenServerSocketFunc() {
+        return listenServerSocketFunc;
+    }
+    
 }

@@ -497,6 +497,10 @@ public class MigolParser {
                 } else {
                     return AssignmentOperation.getInstance(OP_GT, parseReadValue());
                 }
+            } else if(opc == '!'){
+                throw new MigolParsingException(
+                        "Obsolete bitwise not operator (replace <$! with <$^-1)"
+                        , cLine, linenum, strpos - 1);
             }
         } else {
             return AssignmentOperation.getInstance(OP_ASSIGN, parseReadValue());
