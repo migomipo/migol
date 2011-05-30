@@ -1,6 +1,7 @@
 package se.psilon.migomipo.migol2.test;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import se.psilon.migomipo.migol2.MigolParsedProgram;
 import se.psilon.migomipo.migol2.MigolExecutionException;
@@ -14,8 +15,9 @@ public class MigolTest {
 
     public static void main(String[] args) throws MigolExecutionException, IOException, MigolParsingException {
 
-        MigolParsedProgram prog = MigolParser.parseFile("E:\\hg\\migol\\test.mgl");
-                       
+        System.setIn(new FileInputStream("E:\\hw.malbolge"));
+        MigolParsedProgram prog = MigolParser.parseFile("E:\\malbolge.mgl");
+        prog.executeProgram(new MigolExecutionSession());
         return;
 
     }

@@ -3,7 +3,7 @@ package se.psilon.migomipo.migol2.io;
 import se.psilon.migomipo.migol2.MigolExecutionSession;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.ByteChannel;
+import java.nio.channels.*;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -159,7 +159,7 @@ public class IOManager {
             int error = 0;
             int[] mem = session.getMemory();
             try {
-                ByteChannel channel = (ByteChannel) map.get(mem[structPos + 1]);
+                Channel channel = (Channel) map.get(mem[structPos + 1]);
                 if (channel == null) {
                     throw new NullPointerException();
                 }
