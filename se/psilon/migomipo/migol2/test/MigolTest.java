@@ -15,9 +15,12 @@ public class MigolTest {
 
     public static void main(String[] args) throws MigolExecutionException, IOException, MigolParsingException {
 
-        System.setIn(new FileInputStream("E:\\hw.malbolge"));
-        MigolParsedProgram prog = MigolParser.parseFile("E:\\malbolge.mgl");
-        prog.executeProgram(new MigolExecutionSession());
+        MigolParsedProgram prog = MigolParser.parseFile("C:\\Users\\John\\Documents\\hg\\migol\\switest.mgl");
+        MigolExecutionSession sess = new MigolExecutionSession();
+        IOManager io = new IOManager();
+        IOUtilities.addStdIOFunctions(sess, io);
+        prog.executeProgram(sess);
+        io.close();
         return;
 
     }

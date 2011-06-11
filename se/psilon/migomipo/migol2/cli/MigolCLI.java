@@ -28,65 +28,76 @@ package se.psilon.migomipo.migol2.cli;
 import se.psilon.migomipo.migol2.*;
 import se.psilon.migomipo.migol2.parse.*;
 import java.io.*;
+import java.util.regex.*;
 import se.psilon.migomipo.migol2.io.IOManager;
 import se.psilon.migomipo.migol2.io.IOUtilities;
 
-
 public class MigolCLI {
 
-    private static final String VERSION = "11.0.11";
+    private static final String VERSION = "11.1.0";
     private static final String VERSIONINFO =
-            "MigoMipo Migol 11 interpreter version " + VERSION + "\n" +
-            "\u00A9 2009-2011 John Eriksson";
+            "MigoMipo Migol 11 interpreter version " + VERSION + "\n"
+            + "\u00A9 2009-2011 John Eriksson\n"
+            + "Use the flag \"--help\" to list flags";
+    private static final String HELP =
+            "Flags: \n"
+            + "-m size         Sets the number of memory cells\n"
+            + "                The number of memory cells are written as an integer\n"
+            + "                Suffixes \"k\" and \"m\" are supported\n"
+            + "--version       Prints version info\n"
+            + "--help          Prints this list of command flags \n";
 
-    
     public static void main(String[] args) {
-        boolean filemode = true;
-        boolean flag = true;
-        String interpretline = "";
 
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-            if (flag && arg.startsWith("-")) {
-                if (arg.equals("--version")) {
-                    System.out.println(VERSIONINFO);
-                    return;
+        int mem = 1024 * 1024;
+        Reader reader = null;
+        try {
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                if (arg.startsWith("-")) {
+                    if (arg.equals("--version")) {
+                        System.out.println(VERSIONINFO);
+                        return;
+                    } else if (arg.equals("--help")) {
+                        System.out.println(HELP);
+                        return;
+                    } else if (arg.equals("-m")) {
+                        i++;
+                        mem = parseSize(args[i]);
+                    }
+                } else {
+                    if (reader != null) {
+                        throw new IllegalArgumentException();
+                    }
+                    reader = new FileReader(arg);
                 }
-                else {
-                    System.err.println("Error: Unknown flag \"" + arg + "\"");
-                    System.exit(1);
-                }
-            } else if (filemode) {
-                try {
-                    interpret(new FileReader(arg));
-                } catch (FileNotFoundException ex) {
-                    System.err.println("File not found");
-                    System.exit(1);
-                }
-                return;
+
+            }
+            if (reader != null) {
+                interpret(reader, mem);
             } else {
-            } // Ignore if -e set and not a flag
+                System.out.println(VERSIONINFO);
+            }
+        } catch (RuntimeException ex) {
+            System.err.println(HELP);
+            System.exit(1);
+        } catch (IOException ex) {
+            System.err.println("I/O error: " + ex.getMessage());
+            System.exit(1);
         }
 
-        if (interpretline.length() == 0) {
-            System.err.println(VERSIONINFO);
-            System.exit(1);
-        } else {
-            interpret(new StringReader(interpretline));
-        }
+
+
     }
 
-    private static void interpret(Reader read) {
+    private static void interpret(Reader read, int memsize) throws IOException {
         try {
             MigolParsedProgram prog = MigolParser.parse(read);
-            MigolExecutionSession session = new MigolExecutionSession();  
+            MigolExecutionSession session = new MigolExecutionSession(memsize);
             IOManager io = new IOManager();
             IOUtilities.addStdIOFunctions(session, io);
             session.executeProgram(prog);
             io.close();
-        } catch (IOException ex) {
-            System.err.println("I/O error: " + ex.getMessage());
-            System.exit(1);
         } catch (MigolParsingException ex) {
             System.err.println("Parsing error: " + ex.getMessage());
             System.exit(1);
@@ -95,5 +106,21 @@ public class MigolCLI {
             System.exit(1);
         }
 
+    }
+
+    private static int parseSize(String arg) {
+        
+        Pattern p = Pattern.compile("(\\d+)([mk]?)");
+        Matcher m = p.matcher(arg);
+        m.matches();
+        int modifier = 1;
+        if (m.group(2).equals("m")) {
+            modifier = 1000000;
+        } else if (m.group(2).equals("k")) {
+            modifier = 1000;
+        }
+
+
+        return Integer.parseInt(m.group(1)) * modifier;
     }
 }

@@ -198,7 +198,8 @@ public class MigolExecutionSession {
                     }
                 }
             }
-        } finally {
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            throw new MigolExecutionException("Memory index out of bounds" ,ex, pp);
         }
     }
 

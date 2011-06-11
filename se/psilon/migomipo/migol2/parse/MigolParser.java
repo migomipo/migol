@@ -403,7 +403,7 @@ public class MigolParser {
             } else if (isNum(c) || c == '-') {
                 int val = parseIntegerValue();
                 mval = IntegerValue.getInstance(val);
-            } else if (c >= 'a' && c <= 'z') {
+            } else if (isValidName(c)) {
                 int labelpos = strpos;                
                 String name = parseName();
                 LabelValue l = labelValues.get(name);
@@ -411,7 +411,7 @@ public class MigolParser {
                     l = new LabelValue(name);
                     labelValues.put(name, l);
                     labels.add(new SavedLabel(l, cLine, linenum, labelpos));
-                    // Stores the first occurence of each label
+                    // Stores the first usage of each label
                 }
                 mval = l;
             } else {
@@ -583,10 +583,15 @@ public class MigolParser {
                     "Incorrect value", cLine, linenum, strpos);
         }
     }
+    
+    
+    private boolean isValidName(char c){
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+    }
 
     private String parseName() throws MigolParsingException {
         int start = strpos;
-        while (c >= 'a' && c <= 'z') {
+        while (isValidName(c)) {
             nextChar();
             if (endOfLine) {
                 break;
