@@ -1,20 +1,17 @@
-package se.psilon.migomipo.migol2.parse;
+package se.psilon.migomipo.migol2;
 
 import java.util.Map;
-import se.psilon.migomipo.migol2.IntegerValue;
-import se.psilon.migomipo.migol2.MigolValue;
-import se.psilon.migomipo.migol2.MigolExecutionException;
-import se.psilon.migomipo.migol2.MigolExecutionSession;
 
-class LabelValue implements MigolValue{
+
+public class LabelValue implements MigolValue{
     private String label;
     private IntegerValue value = null;
 
-    LabelValue(String label) {
+    public LabelValue(String label) {
         this.label = label;
     }
 
-    void resolve(Map<String, Integer> vars){
+    public void resolve(Map<String, Integer> vars){
         value = IntegerValue.getInstance(vars.get(label).intValue());
     }
     
@@ -30,6 +27,20 @@ class LabelValue implements MigolValue{
         value.set(session, val);
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public IntegerValue getValue() {
+        return value;
+    }
+
+    public void setValue(IntegerValue value) {
+        this.value = value;
+    }
+    
+    
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
