@@ -102,7 +102,7 @@ public class SocketManager {
                 byte[] addrbytes = addr.getAddress();
                 int savepos = mem[structPos + 3];
                 for(int i=0;i<addrbytes.length;i++){
-                    mem[savepos + i] = addrbytes[i];
+                    mem[savepos + i] = addrbytes[i] & 0xFF;
                 }
                 if(addrbytes.length == 4){
                     mode = 0;

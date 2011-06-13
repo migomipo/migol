@@ -586,24 +586,21 @@ public class MigolParser {
     
     
     private boolean isValidName(char c){
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
     private String parseName() throws MigolParsingException {
         int start = strpos;
-        while (isValidName(c)) {
+        if(isValidName(c)){
             nextChar();
-            if (endOfLine) {
-                break;
+            while (!endOfLine && (isValidName(c) || c == '_')) {
+                nextChar();
             }
-        }
-        if (strpos <= start) {
+        } else {
             throw new MigolParsingException(
                     "Incorrect name", cLine, linenum, strpos);
         }
         return cLine.substring(start, strpos);
-
-
     }
 
     private boolean isBlank(char c) {
