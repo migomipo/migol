@@ -69,7 +69,9 @@ public class MigolParser {
 
         private void resolve(Map<String, Integer> constants) throws MigolParsingException {
             try {
-                value.resolve(constants);
+                String label = value.getLabel();
+                value.setValue(IntegerValue.getInstance(constants.get(label).intValue()));
+                
             } catch (NullPointerException ex) {
                 throw new MigolParsingException("Undefined label", cLine, linenum, strpos);
             }

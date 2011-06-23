@@ -10,11 +10,7 @@ public class LabelValue implements MigolValue{
     public LabelValue(String label) {
         this.label = label;
     }
-
-    public void resolve(Map<String, Integer> vars){
-        value = IntegerValue.getInstance(vars.get(label).intValue());
-    }
-    
+       
     public int get(MigolExecutionSession session) throws MigolExecutionException {
         return value.get(session);
     }

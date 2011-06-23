@@ -27,7 +27,6 @@ package se.psilon.migomipo.migol2;
 
 import se.psilon.migomipo.migol2.io.*;
 import java.util.*;
-import se.psilon.migomipo.migol2.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -53,6 +52,7 @@ public class MigolExecutionSession {
     private int result = -1;
     private int handler = -1;
     private boolean isInterruptMode = false;
+    private boolean debug = false;
     
     private boolean pplocked = false;
     private LinkedBlockingQueue<Integer> results = new LinkedBlockingQueue<Integer>();
@@ -151,6 +151,16 @@ public class MigolExecutionSession {
     public void setWaitInterrupt(boolean waitInterrupt) {
         this.waitInterrupt = waitInterrupt;
     }
+
+    public boolean isDebugMode() {
+        return debug;
+    }
+
+    public void setDebugMode(boolean debug) {
+        this.debug = debug;
+    }
+    
+    
 
 
     /**

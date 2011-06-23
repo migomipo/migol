@@ -53,6 +53,9 @@ public class FileOperationManager {
 
             } catch (IOException ex) {
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch (IllegalArgumentException ex) {
                 error = 2;
             } catch (NegativeArraySizeException ex) {
@@ -90,6 +93,9 @@ public class FileOperationManager {
                 error = 4;
             } catch (IOException ex) {
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch (NullPointerException ex) {
                 error = 2;
             }
@@ -125,6 +131,9 @@ public class FileOperationManager {
                 error = 4;
             } catch (IOException ex) {
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch (NullPointerException ex) {
                 error = 2;
             }
@@ -160,6 +169,9 @@ public class FileOperationManager {
                 error = 4;
             } catch (IOException ex) {
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch (NullPointerException ex) {
                 error = 2;
             }

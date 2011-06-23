@@ -58,7 +58,10 @@ public class SocketManager {
                 handle = io.addObject(ch);
                 
             } catch (IOException ex) {
-                error = 1;                
+                error = 1; 
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch (IllegalArgumentException ex){
                 error = 3;
             }
@@ -111,6 +114,9 @@ public class SocketManager {
                 }
             } catch(UnknownHostException ex){
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             }
             mem[structPos + 4] = error;
             mem[structPos + 5] = mode;
@@ -144,6 +150,9 @@ public class SocketManager {
                 handle = io.addObject(server);
             } catch(IOException ex){
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch(NullPointerException ex){
                 error = 2;
             } catch(IllegalArgumentException ex){
@@ -183,6 +192,9 @@ public class SocketManager {
                 handle = io.addObject(channel);
             } catch(IOException ex){
                 error = 1;
+                if(session.isDebugMode()){
+                    ex.printStackTrace();
+                }
             } catch(NullPointerException ex){
                 error = 2;
             } catch(ClassCastException ex){

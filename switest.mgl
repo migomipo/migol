@@ -1,17 +1,21 @@
-20<11, 21<2, 22<30, 23<5
+100<'H,101<'e,102<'l,103<'l,104<'o,105<',,106<' ,107<'W,108<'o,109<'r,110<'l,111<'d,112<'! 
+// Output buffer
 
-30<'H, 31<'e, 32<'l, 33<'l, 34<'o, 35<10
+!#<handler
+2<0 // I/O completion flag
+20<11 // Write operation (11)
+21<2 // I/O handle (2 = STDOUT)
+22<100 // Buffer address
+23<13 // Buffer length
 
-!#<Handle
+!<20 // Start output operation
+\<1?<>[2] // Block until operation has completed
+#<$-1?<>[2]
+#<30000 // End program
 
-!<20
+2<1:handler // sets I/O completion flag
+#!<[*#] // ..and returns. No error numbers are checked
 
-'a>
 
-#<eof
 
-_:Handle
-'b>
-#!<[*#]
 
-_:eof
